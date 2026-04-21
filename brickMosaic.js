@@ -15,6 +15,8 @@ function init() {
 	document.getElementById("saturationRange").value = 0;
 	document.getElementById("valueRange").value = 0;
 	document.getElementById("contrastRange").value = 0;
+	document.getElementById("shadowsRange").value = 0;
+	document.getElementById("highlightsRange").value = 0;
 	document.getElementById("widthInputValue").value = 48;
 	document.getElementById("heightInputValue").value = 48
 	document.getElementById("inputBeatles").value = 0;
@@ -47,9 +49,24 @@ document.getElementById("imageFile").addEventListener("change", function() {
 		reader.onload = function()
 		{
 			previewImage.src = reader.result;
-			
+
+			// 重新上传图片时，重置所有颜色调整参数为0
+			document.getElementById("hueRange").value = 0;
+			document.getElementById("saturationRange").value = 0;
+			document.getElementById("valueRange").value = 0;
+			document.getElementById("contrastRange").value = 0;
+			document.getElementById("shadowsRange").value = 0;
+			document.getElementById("highlightsRange").value = 0;
+			document.getElementById("hueRangeLabel").innerHTML = "Hue: 0";
+			document.getElementById("saturationRangeLabel").innerHTML = "Saturation: 0";
+			document.getElementById("valueRangeLabel").innerHTML = "Value: 0";
+			document.getElementById("contrastRangeLabel").innerHTML = "Contrast: 0";
+			document.getElementById("shadowsRangeLabel").innerHTML = "Shadows: 0";
+			document.getElementById("highlightsRangeLabel").innerHTML = "Highlights: 0";
+
 			previewImage.decode()
 				.then(() => {
+
 					
 					drawPreviewImage(true);
 					
@@ -304,6 +321,26 @@ document.getElementById("contrastRange")
 );
 
 
+document.getElementById("shadowsRange")
+	.addEventListener("change", async () => {
+		const shadowsValue = document.getElementById("shadowsRange").value;
+        document.getElementById("shadowsRangeLabel").innerHTML = `Shadows: ${shadowsValue}`;
+        await drawPreviewImage(true);
+    },
+    false
+);
+
+
+document.getElementById("highlightsRange")
+	.addEventListener("change", async () => {
+		const highlightsValue = document.getElementById("highlightsRange").value;
+        document.getElementById("highlightsRangeLabel").innerHTML = `Highlights: ${highlightsValue}`;
+        await drawPreviewImage(true);
+    },
+    false
+);
+
+
 document.getElementById("ignoreBlackCheck")
 	.addEventListener("change", async () => {
 		await drawPreviewImage(true);
@@ -374,6 +411,106 @@ function adjustImageContrast(imgData, rawPixels, contrast) {  //input range [-10
 }
 
 
+// 约束值在范围内
+function constrain(v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}/*
+ * 曲线调整
+ * Shadows: 暗部调整，范围 -100 ~ +100，默认 0
+ *   负值：压暗整个暗区域，增加对比度
+ *   正值：提亮整个暗区域，显示暗部细节
+ * Highlights: 亮部调整，范围 -100 ~ +100，默认 0
+ *   负值：压暗整个亮区域，保留亮部细节
+ *   正值：提亮整个亮区域
+ *
+ * 使用三次多项式插值，四个控制点定义曲线：
+ * (0, 0), (64, 64 + (Shadows/100)*64), (192, 192 + (Highlights/100)*64), (255, 255)
+ * 默认 Shadows=0, Highlights=0 → y = x → 对角线，不改变图像
+ *
+ * 这种设计：Shadows主要影响暗区，Highlights主要影响亮区，拖动滑块时用户能看到明显变化
+ */
+function adjustImageCurves(imgData, rawPixels, shadows, highlights) {  //input range [-100, 100]
+    var ignoreBlack = document.getElementById("ignoreBlackCheck").checked;
+
+    // 四个控制点 (x, y):
+    // p0: 纯黑 x=0
+    // p1: 暗区 x=64
+    // p2: 亮区 x=192
+    // p3: 纯白 x=255
+    const x0 = 0,   y0 = 0;
+    const x1 = 64,  y1 = 64 + (shadows / 100) * 64;   // shadows偏移范围 -64 ~ +64
+    const x2 = 192, y2 = 192 + (highlights / 100) * 64; // highlights偏移范围 -64 ~ +64
+    const x3 = 255, y3 = 255;
+
+    // 求解三次多项式 y = a*x³ + b*x² + c*x + d
+    // 直接求解，不需要预计算逆矩阵，计算量很小
+    // 方程组：
+    //  1) a*x0³ + b*x0² + c*x0 + d = y0
+    //  2) a*x1³ + b*x1² + c*x1 + d = y1
+    //  3) a*x2³ + b*x2² + c*x2 + d = y2
+    //  4) a*x3³ + b*x3² + c*x3 + d = y3
+
+    // x0=0, y0=0 → d = 0
+    const d = 0;
+    // 所以简化为三元方程组:
+    // a*x1³ + b*x1² + c*x1 = y1
+    // a*x2³ + b*x2² + c*x2 = y2
+    // a*x3³ + b*x3² + c*x3 = y3
+    const m11 = 64*64*64;
+    const m12 = 64*64;
+    const m13 = 64;
+    const m21 = 192*192*192;
+    const m22 = 192*192;
+    const m23 = 192;
+    const m31 = 255*255*255;
+    const m32 = 255*255;
+    const m33 = 255;
+
+    // 使用克莱姆法则解三元一次方程组
+    const det =
+        m11 * (m22*m33 - m23*m32) -
+        m12 * (m21*m33 - m23*m31) +
+        m13 * (m21*m32 - m22*m31);
+
+    const det_a =
+        y1 * (m22*m33 - m23*m32) -
+        m12 * (y2*m33 - m23*y3) +
+        m13 * (y2*m32 - m22*y3);
+
+    const det_b =
+        m11 * (y2*m33 - m23*y3) -
+        y1 * (m21*m33 - m23*m31) +
+        m13 * (m21*y3 - y2*m31);
+
+    const det_c =
+        m11 * (m22*y3 - y2*m32) -
+        m12 * (m21*y3 - y2*m31) +
+        y1 * (m21*m32 - m22*m31);
+
+    const a = det_a / det;
+    const b = det_b / det;
+    const c = det_c / det;
+
+    // 预计算查找表：input [0-255] → output [0-255]
+    const lut = new Array(256);
+    for (let i = 0; i < 256; i++) {
+        const output = a*i*i*i + b*i*i + c*i + d;
+        lut[i] = Math.round(constrain(output, 0, 255));
+    }
+
+    // 逐像素应用曲线
+    for(var i=0; i<imgData.data.length; i+=4){   //r,g,b,a
+        if (ignoreBlack && rawPixels[i] == 0 && rawPixels[i+1] == 0 && rawPixels[i+2] == 0){
+        } else {
+            imgData.data[i]   = lut[imgData.data[i]];
+            imgData.data[i+1] = lut[imgData.data[i+1]];
+            imgData.data[i+2] = lut[imgData.data[i+2]];
+        }
+    }
+    return imgData;
+}
+
+
 function drawIgnoredRegions(imgData, rawPixels) {
     var ignoreBlack = document.getElementById("ignoreBlackCheck").checked;
 	
@@ -391,26 +528,31 @@ async function drawPreviewImage (drawIgnored) { //hsvChanged, contrastChanged
 	const saturationValue = document.getElementById("saturationRange").value;
 	const valueValue = document.getElementById("valueRange").value;
 	const contrastValue = document.getElementById("contrastRange").value;
+	const shadowsValue = document.getElementById("shadowsRange").value;
+	const highlightsValue = document.getElementById("highlightsRange").value;
 	const intermediateSize = 200;
-	
+
 	var tmpCanvas = document.createElement('canvas');
 	tmpCanvas.width = intermediateSize;
 	tmpCanvas.height = intermediateSize * previewImage.height/previewImage.width;
-	
+
 	const context = tmpCanvas.getContext("2d");
 	context.drawImage(previewImage, 0, 0, previewImage.width, previewImage.height, 0, 0, tmpCanvas.width, tmpCanvas.height);
 	var pixels = context.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height).data;
-	
+
 	var imgData = context.createImageData(tmpCanvas.width, tmpCanvas.height);
 	Object.keys(pixels).forEach(pixel => {
 		imgData.data[pixel] = pixels[pixel];
 	});
-	
-	if ((hueValue != 0) || (saturationValue != 0) || (valueValue != 0) || (contrastValue != 0)) {
+
+	if ((hueValue != 0) || (saturationValue != 0) || (valueValue != 0) || (contrastValue != 0) || (shadowsValue != 0) || (highlightsValue != 0)) {
 		imgData = adjustImageHSV(imgData, pixels, hueValue, saturationValue/100, valueValue/100);
-		
+
 		imgData = adjustImageContrast(imgData, pixels, contrastValue);
+
+		imgData = adjustImageCurves(imgData, pixels, shadowsValue, highlightsValue);
 	}
+
 	
 	if (drawIgnored) {
 		imgData = drawIgnoredRegions(imgData, pixels);
