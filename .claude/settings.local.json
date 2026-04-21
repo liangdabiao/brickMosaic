@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(wc:*)",
+      "Bash(wc -c \"D:/custombrickmosaic.github.io-master/brickMosaic.js\")"
+    ]
+  },
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/skills.git"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true
+}
