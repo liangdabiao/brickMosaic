@@ -32,7 +32,11 @@ function init() {
 	document.getElementById("inputBatman").value = 0;
 
 	var numReqParts = document.getElementById("heightInputValue").value * document.getElementById("widthInputValue").value;
-	document.getElementById("requiredPartsString").innerHTML = `Required parts: ${numReqParts}`;
+	const w = document.getElementById("widthInputValue").value;
+	const h = document.getElementById("heightInputValue").value;
+	const ratioW = Math.round(w / 16);
+	const ratioH = Math.round(h / 16);
+	document.getElementById("requiredPartsString").innerHTML = `(${ratioW}:${ratioH}) 所需颗粒: ${numReqParts}`;
 
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas');
 	thumbnailCanvas.height = thumbnailCanvas.width * document.getElementById("heightInputValue").value / document.getElementById("widthInputValue").value;
@@ -145,12 +149,16 @@ document.getElementById("buttonDownloadPDF")
 	
 document.getElementById("widthInputValue").addEventListener('change', async () => {
 	const widthInput = document.getElementById("widthInputValue");
-	widthInput.value = Math.max(1,Math.min(200, Number(widthInput.value))).toString();
-	
-	var numReqParts = widthInput.value * document.getElementById("heightInputValue").value;
-	document.getElementById("requiredPartsString").innerHTML = `Required parts: ${numReqParts}`;
-	
-	var thumbnailCanvas = document.getElementById('thumbnailCanvas')
+	widthInput.value = Math.max(16,Math.min(200, Number(widthInput.value))).toString();
+
+	var w = Number(widthInput.value);
+	var h = Number(document.getElementById("heightInputValue").value);
+	var numReqParts = w * h;
+	const ratioW = Math.round(w / 16);
+	const ratioH = Math.round(h / 16);
+	document.getElementById("requiredPartsString").innerHTML = `(${ratioW}:${ratioH}) 所需颗粒: ${numReqParts}`;
+
+	var thumbnailCanvas = document.getElementById('thumbnailCanvas');
 	thumbnailCanvas.height = thumbnailCanvas.width * document.getElementById("heightInputValue").value / widthInput.value;
 	
 	var partCount = updatePartList();
@@ -160,9 +168,9 @@ document.getElementById("widthInputValue").addEventListener('change', async () =
 		document.getElementById("buttonCalculate").disabled = true;
 	}
 	if (numReqParts <= partCount) {
-		document.getElementById("availablePartsString").innerHTML = `Available parts: ${partCount}`;
+		document.getElementById("availablePartsString").innerHTML = `可用颗粒: ${partCount}`;
 	} else {
-		document.getElementById("availablePartsString").innerHTML = `Available parts: <span style="color:red; font-weight:bold;">${partCount}</span>`;
+		document.getElementById("availablePartsString").innerHTML = `可用颗粒: <span style="color:red; font-weight:bold;">${partCount}</span>`;
 	}
 	
 	await drawPreviewImage(true);
@@ -171,11 +179,15 @@ document.getElementById("widthInputValue").addEventListener('change', async () =
 
 document.getElementById("heightInputValue").addEventListener('change', async () => {
 	const heightInput = document.getElementById("heightInputValue");
-	heightInput.value = Math.max(1,Math.min(200, Number(heightInput.value))).toString();
-	
-	var numReqParts = document.getElementById("widthInputValue").value * heightInput.value;
-	document.getElementById("requiredPartsString").innerHTML = `Required parts: ${numReqParts}`;
-	
+	heightInput.value = Math.max(16,Math.min(200, Number(heightInput.value))).toString();
+
+	var w = Number(document.getElementById("widthInputValue").value);
+	var h = Number(heightInput.value);
+	var numReqParts = w * h;
+	const ratioW = Math.round(w / 16);
+	const ratioH = Math.round(h / 16);
+	document.getElementById("requiredPartsString").innerHTML = `(${ratioW}:${ratioH}) 所需颗粒: ${numReqParts}`;
+
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas')
 	thumbnailCanvas.height = thumbnailCanvas.width * heightInput.value / document.getElementById("widthInputValue").value;
 	
@@ -186,9 +198,9 @@ document.getElementById("heightInputValue").addEventListener('change', async () 
 		document.getElementById("buttonCalculate").disabled = true;
 	}
 	if (numReqParts <= partCount) {
-		document.getElementById("availablePartsString").innerHTML = `Available parts: ${partCount}`;
+		document.getElementById("availablePartsString").innerHTML = `可用颗粒: ${partCount}`;
 	} else {
-		document.getElementById("availablePartsString").innerHTML = `Available parts: <span style="color:red; font-weight:bold;">${partCount}</span>`;
+		document.getElementById("availablePartsString").innerHTML = `可用颗粒: <span style="color:red; font-weight:bold;">${partCount}</span>`;
 	}
 	
 	await drawPreviewImage(true);
@@ -215,9 +227,9 @@ for (var i = 0; i < myPartButtonGroup.length; i++) {
 				document.getElementById("buttonCalculate").disabled = true;
 			}
 			if ((document.getElementById("widthInputValue").value * document.getElementById("heightInputValue").value) <= partCount) {
-				document.getElementById("availablePartsString").innerHTML = `Available parts: ${partCount}`;
+				document.getElementById("availablePartsString").innerHTML = `可用颗粒: ${partCount}`;
 			} else {
-				document.getElementById("availablePartsString").innerHTML = `Available parts: <span style="color:red; font-weight:bold;">${partCount}</span>`;
+				document.getElementById("availablePartsString").innerHTML = `可用颗粒: <span style="color:red; font-weight:bold;">${partCount}</span>`;
 			}
 		})
 		// also add a callback to the input field itself
@@ -231,9 +243,9 @@ for (var i = 0; i < myPartButtonGroup.length; i++) {
 					document.getElementById("buttonCalculate").disabled = true;
 				}
 				if ((document.getElementById("widthInputValue").value * document.getElementById("heightInputValue").value) <= partCount) {
-					document.getElementById("availablePartsString").innerHTML = `Available parts: ${partCount}`;
+					document.getElementById("availablePartsString").innerHTML = `可用颗粒: ${partCount}`;
 				} else {
-					document.getElementById("availablePartsString").innerHTML = `Available parts: <span style="color:red; font-weight:bold;">${partCount}</span>`;
+					document.getElementById("availablePartsString").innerHTML = `可用颗粒: <span style="color:red; font-weight:bold;">${partCount}</span>`;
 				}
 			})
 		}
