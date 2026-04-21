@@ -69,8 +69,9 @@ document.getElementById("imageFile").addEventListener("change", function() {
 
 					
 					drawPreviewImage(true);
-					
+
 					document.getElementById("imageAdjustmentsRow").hidden = false;
+					document.getElementById("colorAdjustmentsRow").hidden = false;
 					document.getElementById("buttonDownloadPDF").disabled = true;
 					
 					validImagePresent = true;
@@ -83,6 +84,7 @@ document.getElementById("imageFile").addEventListener("change", function() {
 				.catch((encodingError) => {
 					console.log(encodingError);
 					document.getElementById("imageAdjustmentsRow").hidden = true;
+					document.getElementById("colorAdjustmentsRow").hidden = true;
 					document.getElementById("buttonCalculate").disabled = true;
 					document.getElementById("buttonDownloadPDF").disabled = true;
 				})
@@ -97,6 +99,7 @@ document.getElementById("imageFile").addEventListener("change", function() {
 		previewImage.style.display = null;
 
         document.getElementById("imageAdjustmentsRow").hidden = true;
+        document.getElementById("colorAdjustmentsRow").hidden = true;
         document.getElementById("buttonCalculate").disabled = true;
 		document.getElementById("buttonDownloadPDF").disabled = true;
 
@@ -240,28 +243,28 @@ for (var i = 0; i < myPartButtonGroup.length; i++) {
 document.getElementById("buttonPlusWidth")
     .addEventListener("click", function () {
 		var myInputForm = document.getElementById("widthInputValue");
-		myInputForm.value = Math.min(200, Number(myInputForm.value) + 1).toString();
+		myInputForm.value = Math.min(200, Number(myInputForm.value) + 16).toString();
 		myInputForm.dispatchEvent(new Event('change'));
 	});
 
 document.getElementById("buttonMinusWidth")
     .addEventListener("click", function () {
 		var myInputForm = document.getElementById("widthInputValue");
-		myInputForm.value = Math.max(1, Number(myInputForm.value) - 1).toString();
+		myInputForm.value = Math.max(16, Number(myInputForm.value) - 16).toString();
 		myInputForm.dispatchEvent(new Event('change'));
 	});
-	
+
 document.getElementById("buttonPlusHeight")
     .addEventListener("click", function () {
 		var myInputForm = document.getElementById("heightInputValue");
-		myInputForm.value = Math.min(200, Number(myInputForm.value) + 1).toString();
+		myInputForm.value = Math.min(200, Number(myInputForm.value) + 16).toString();
 		myInputForm.dispatchEvent(new Event('change'));
 	});
 
 document.getElementById("buttonMinusHeight")
     .addEventListener("click", function () {
 		var myInputForm = document.getElementById("heightInputValue");
-		myInputForm.value = Math.max(1, Number(myInputForm.value) - 1).toString();
+		myInputForm.value = Math.max(16, Number(myInputForm.value) - 16).toString();
 		myInputForm.dispatchEvent(new Event('change'));
 	});
 
@@ -286,6 +289,9 @@ document.getElementById("saturationRange")
 		const saturationValue = document.getElementById("saturationRange").value;
         document.getElementById("saturationRangeLabel").innerHTML = `Saturation: ${saturationValue}`;
         await drawPreviewImage(true);
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -296,6 +302,10 @@ document.getElementById("hueRange")
 		const hueValue = document.getElementById("hueRange").value;
         document.getElementById("hueRangeLabel").innerHTML = `Hue: ${hueValue}`;
         await drawPreviewImage(true);
+        // 自动重新计算马赛克，显示调整后的效果
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -306,6 +316,9 @@ document.getElementById("valueRange")
 		const valueValue = document.getElementById("valueRange").value;
         document.getElementById("valueRangeLabel").innerHTML = `Value: ${valueValue}`;
         await drawPreviewImage(true);
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -316,6 +329,9 @@ document.getElementById("contrastRange")
 		const contrastValue = document.getElementById("contrastRange").value;
         document.getElementById("contrastRangeLabel").innerHTML = `Contrast: ${contrastValue}`;
         await drawPreviewImage(true);
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -326,6 +342,9 @@ document.getElementById("shadowsRange")
 		const shadowsValue = document.getElementById("shadowsRange").value;
         document.getElementById("shadowsRangeLabel").innerHTML = `Shadows: ${shadowsValue}`;
         await drawPreviewImage(true);
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -336,6 +355,9 @@ document.getElementById("highlightsRange")
 		const highlightsValue = document.getElementById("highlightsRange").value;
         document.getElementById("highlightsRangeLabel").innerHTML = `Highlights: ${highlightsValue}`;
         await drawPreviewImage(true);
+        if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        	generateValidColoringAndDraw();
+        }
     },
     false
 );
@@ -345,6 +367,9 @@ document.getElementById("ignoreBlackCheck")
 	.addEventListener("change", async () => {
 		await drawPreviewImage(true);
 		updatePartList();
+		if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+			generateValidColoringAndDraw();
+		}
     },
     false
 );

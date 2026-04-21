@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 
     <meta charset="UTF-8">
@@ -8,13 +8,13 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
-	
+
 	<meta name="google-site-verification" content="tSH5B2SCBLd476R1WxeTOCk3Q3ySM5IO1TQ8XPn3FD8" />
-	<meta name="description" content="Lets you create lego art mosaics from your own images for free! Download instructions to realize the mosaics with your existing lego art sets." />
-	
+	<meta name="description" content="使用你自己的图片免费创建乐高马赛克！下载拼搭说明书，用你现有的乐高Art套装拼搭出自定义作品。" />
+
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
-	
-    <title>Custom Brick Mosaic Generator</title>
+
+    <title>AI乐高马赛克像素画生成器</title>
 	
     <style>
         .img-fluid{
@@ -33,26 +33,26 @@
 	<div class="container-fluid shadow mt-0 py-0 px-0">
 		<div class="container-xl">
 			<div class="row">
-				<h1 class="mb-0 mt-2">Custom Brick Mosaic Generator</h1>
+				<h1 class="mb-0 mt-2">AI乐高马赛克像素画生成器</h1>
 			</div>
 		</div>
 		<div class="container-xl">
 			<nav class="navbar navbar-expand-lg navbar-light pb-1 pt-0">
 				<div class="container-fluid px-0">
-					<span class="navbar-text py-0" style="color:black">Create brick art mosaics from your own images, and realize them with existing lego art sets.</span>
+					<span class="navbar-text py-0" style="color:black">用你自己的图片创建乐高马赛克，使用现有乐高Art套装拼搭出自定义作品。</span>
 					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 					  <span class="navbar-toggler-icon"></span>
 					</button>
 					<div class="collapse navbar-collapse" id="navbarNav">
 					  <ul class="navbar-nav ms-auto">
 						<li class="nav-item">
-						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#howitworksModal">How to use</a>
+						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#howitworksModal">使用说明</a>
 						</li>
 						<li class="nav-item">
-						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#tippsModal">Tipps & Tricks</a>
+						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#tippsModal">使用技巧</a>
 						</li>
 						<li class="nav-item">
-						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">About</a>
+						  <a class="nav-link py-0" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">关于</a>
 						</li>
 					  </ul>
 					</div>
@@ -66,7 +66,7 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="row">
-                    <label for="imageFile" class="form-label"><strong>1. Choose a source image (It is not uploaded)</strong></label>
+                    <label for="imageFile" class="form-label"><strong>1. 选择源图片（图片不会上传）</strong></label>
 				</div>
 				<div class="row pb-0 px-3">
 					<input class="form-control mb-2" type="file" accept="image/*" id="imageFile" name="imageFile"><!--onchange="preview_image(event)"-->
@@ -81,61 +81,19 @@
 					</div>
 					<div class="col-2"></div>
 					<div class="btn-group px-3 py-1 " role="group" aria-label="cropOrScale" id="cropOrScaleImageBtnGroup">
-					    <button type="button" class="btn btn-secondary pt-0 pb-0 active" id="cropCenterSquareButton">Crop center</button>
-						<button type="button" class="btn btn-secondary pt-0 pb-0" id="scaleToSquareButton">Resize to fit</button>
+					    <button type="button" class="btn btn-secondary pt-0 pb-0 active" id="cropCenterSquareButton">裁切中心</button>
+						<button type="button" class="btn btn-secondary pt-0 pb-0" id="scaleToSquareButton">缩放适应</button>
 					</div>
-					
+
 					<div class="col-12 my-1">
 						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="ignoreBlackCheck">
-							<label class="form-check-label" for="flexSwitchCheckDefault">Ignore black regions in image</label>
+							<input class="form-check-input" type="checkbox" id="ignoreBlackCheck" checked>
+							<label class="form-check-label" for="flexSwitchCheckDefault">忽略图片中的黑色区域</label>
 						</div>
-					</div>
-
-					<div class="col-4 pe-0">
-						<label for="hueRange" class="form-label" id="hueRangeLabel">Hue: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="hueRange" min="-180" max="180" value="0">
-					</div>
-					
-					<div class="col-4 pe-0">
-						<label for="saturationRange" class="form-label" id="saturationRangeLabel">Saturation: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="saturationRange" min="-100" max="100" value="0">
-					</div>
-					
-					<div class="col-4 pe-0">
-						<label for="valueRange" class="form-label" id="valueRangeLabel">Value: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="valueRange" min="-100" max="100" value="0">
-					</div>
-					
-					<div class="col-4 pe-0">
-						<label for="contrastRange" class="form-label" id="contrastRangeLabel">Contrast: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="contrastRange" min="-100" max="100" contrast="0">
-					</div>
-
-					<div class="col-4 pe-0">
-						<label for="shadowsRange" class="form-label" id="shadowsRangeLabel">Shadows: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="shadowsRange" min="-100" max="100" value="0">
-					</div>
-
-					<div class="col-4 pe-0">
-						<label for="highlightsRange" class="form-label" id="highlightsRangeLabel">Highlights: 0</label>
-					</div>
-					<div class="col-8">
-						<input type="range" class="form-range" id="highlightsRange" min="-100" max="100" value="0">
 					</div>
                 </div>
                 <div class="row py-4">
-					<label class="form-label"><strong>2. Select the size of the mosaic</strong></label>
+					<label class="form-label"><strong>2. 选择马赛克尺寸</strong></label>
 					<!--div class="col mb-1 ps-3 pe-1">
 						<div class="input-group input-group-sm">
 							<span class="input-group-text">Width</span>
@@ -144,7 +102,7 @@
 					</div-->
 					<div class="col mb-1 ps-3 pe-2">
 						<div class="input-group input-group-sm mb-1">
-							<span class="input-group-text pt-1 px-2">Width</span>
+							<span class="input-group-text pt-1 px-2">宽度</span>
 							<button class="btn btn-secondary pt-0 pb-0" type="button" id="buttonMinusWidth">-</button>
 							<input type="text" class="form-control text-center py-0 px-0" id="widthInputValue" aria-label="MosaicWidth" placeholder="48" value="48">
 							<button class="btn btn-secondary pt-0 pb-0" type="button" id="buttonPlusWidth">+</button>
@@ -152,19 +110,19 @@
 					</div>
 					<div class="col mb-1 pe-3 ps-2">
 						<div class="input-group input-group-sm mb-1">
-							<span class="input-group-text pt-1 px-2">Height</span>
+							<span class="input-group-text pt-1 px-2">高度</span>
 							<button class="btn btn-secondary pt-0 pb-0" type="button" id="buttonMinusHeight">-</button>
 							<input type="text" class="form-control text-center py-0 px-0" id="heightInputValue" aria-label="MosaicHeight" placeholder="48" value="48">
 							<button class="btn btn-secondary pt-0 pb-0" type="button" id="buttonPlusHeight">+</button>
 						</div>
 					</div>
-					<p class="fw-light mb-0 px-4 text-end" id="requiredPartsString">Required parts: 2304</p>
+					<p class="fw-light mb-0 px-4 text-end" id="requiredPartsString">所需颗粒: 2304</p>
                 </div>
 				<div class="row pb-4">
-					<label for="partListGroup" class="form-label"><strong>3. Which lego art set(s) do you have?</strong></label>
+					<label for="partListGroup" class="form-label"><strong>3. 你拥有哪些乐高Art套装？</strong></label>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>The Beatles</label>
+							<label>披头士 (31198)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -176,7 +134,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Marilyn Monroe</label>
+							<label>玛丽莲·梦露 (31197)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -188,7 +146,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Iron Man</label>
+							<label>钢铁侠 (31199)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -200,7 +158,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>The Sith</label>
+							<label>西斯 (31200)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -212,7 +170,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Hogwarts</label>
+							<label>霍格沃茨 (31201)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -224,7 +182,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Mickey Mouse</label>
+							<label>米老鼠 (31202)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -236,7 +194,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Personalized Portrait</label>
+							<label>自定义肖像 (41958)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -248,7 +206,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>World Map</label>
+							<label>世界地图 (31203)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -260,7 +218,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Art Project</label>
+							<label>艺术创作 (21226)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -272,7 +230,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Elvis Presley</label>
+							<label>猫王 (31204)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -284,7 +242,7 @@
 					</div>
 					<div class="form-group row mx-1 px-2">
 						<div class="col-8">
-							<label>Batman</label>
+							<label>蝙蝠侠 (31205)</label>
 						</div>
 						<div class="col-4">
 							<div class="input-group input-group-sm mb-1">
@@ -294,123 +252,173 @@
 							</div>
 						</div>
 					</div>
-					<p class="fw-light mb-0 px-4 text-end" id="availablePartsString">Available parts: <span style="color:red; font-weight:bold;">0</span></p>
+					<p class="fw-light mb-0 px-4 text-end" id="availablePartsString">可用颗粒: <span style="color:red; font-weight:bold;">0</span></p>
 				</div>
                 <div class="row">
-					<label for="buttonCalculate" class="form-label"><strong>4. Run calculation</strong></label>
+					<label for="buttonCalculate" class="form-label"><strong>4. 开始计算</strong></label>
 				</div>
 				<div class="row pb-4 px-3">
 					<div class="progress px-0"  style="height: 38px;" id="calculate-progress-container" hidden>
 						<div class="progress-bar" id="calculate-progress-bar" role="progressbar" style="transition: none;"></div>
 					</div>
-					<button type="button mx-1" class="btn btn-primary" id="buttonCalculate" disabled>Calculate mosaic</button>
+					<button type="button mx-1" class="btn btn-primary" id="buttonCalculate" disabled>计算马赛克</button>
                 </div>
                 <div class="row">
-					<label for="buttonDownload" class="form-label"><strong>5. Download instructions</strong></label>
+					<label for="buttonDownload" class="form-label"><strong>5. 下载说明书</strong></label>
 				</div>
 				<div class="row pb-5 mb-5 px-3">
 					<div class="progress px-0" style="height: 38px;" id="pdf-progress-container" hidden>
 						<div class="progress-bar" id="pdf-progress-bar" role="progressbar" style="transition: none;"></div>
 					</div>
-					<button type="button mx-1" class="btn btn-primary" id="buttonDownloadPDF" disabled>Download instructions (pdf)</button>
+					<button type="button mx-1" class="btn btn-primary" id="buttonDownloadPDF" disabled>下载拼搭说明书 (PDF)</button>
 				</div>
             </div>
             <div class="col-md-7 mb-5 pb-5">
-                <label for="previewImg" class="form-label"><strong>Mosaic preview</strong></label>
+                <label for="previewImg" class="form-label"><strong>马赛克预览</strong></label>
                 <canvas id="previewMosaicCanvas" width="800" height="800" style="border:1px solid #000000;">
-                    Sorry, your browser doesn't support the &lt;canvas&gt; element.
+                    抱歉，你的浏览器不支持 canvas 元素
                 </canvas>
+
+                <div class="mt-4 pt-2" id="colorAdjustmentsRow" hidden>
+                    <h6 class="mb-3"><strong>颜色调整</strong></h6>
+
+                    <div class="row">
+                    	<div class="col-4 pe-0">
+                            <label for="shadowsRange" class="form-label" id="shadowsRangeLabel">暗部: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="shadowsRange" min="-100" max="100" value="0">
+                        </div>
+
+                        <div class="col-4 pe-0">
+                            <label for="highlightsRange" class="form-label" id="highlightsRangeLabel">亮部: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="highlightsRange" min="-100" max="100" value="0">
+                        </div>
+
+                        <div class="col-4 pe-0">
+                            <label for="hueRange" class="form-label" id="hueRangeLabel">色相: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="hueRange" min="-180" max="180" value="0">
+                        </div>
+
+                        <div class="col-4 pe-0">
+                            <label for="saturationRange" class="form-label" id="saturationRangeLabel">饱和度: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="saturationRange" min="-100" max="100" value="0">
+                        </div>
+
+                        <div class="col-4 pe-0">
+                            <label for="valueRange" class="form-label" id="valueRangeLabel">明度: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="valueRange" min="-100" max="100" value="0">
+                        </div>
+
+                        <div class="col-4 pe-0">
+                            <label for="contrastRange" class="form-label" id="contrastRangeLabel">对比度: 0</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="range" class="form-range" id="contrastRange" min="-100" max="100" contrast="0">
+                        </div>
+
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 	
 
 	<!-- Modal -->
-	
+
 	<div class="modal fade" id="howitworksModal" tabindex="-1" aria-labelledby="howitworksModalLabel" aria-hidden="true">
 	  <div class="modal-dialog modal-lg">
 		<div class="modal-content">
 		  <div class="modal-header py-1 bg-light">
-			<h4 class="modal-title" id="howitworksModalLabel">How to use the Custom Brick Mosaic Generator</h4>
+			<h4 class="modal-title" id="howitworksModalLabel">使用说明 - AI乐高马赛克像素画生成器</h4>
 			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		  </div>
 		  <div class="modal-body">
-		    <h5>1. Select a source image</h5>
-			<p>Use the file selection tool to choose a file from your hard drive (or take a photo with your camera, if accessed from a phone). The image will be processed entirely in the browser. Nothing will be uploaded! After opening the image, you will see a preview below the file input. You can choose to squeeze the image into the final mosaic size, or crop the middle region and keep the aspect ratio. Furthermore, sliders below the preview image allow for (optional) modifications of brightness, contrast, and color. If your image has a black background (RGB=0,0,0), you can use the "Ignore black regions" option to focus the algorithm on the foreground object.</p>
-			<h5>2. Choose the size of the mosaic</h5>
-			<p>Use the inputs to select the size of the mosaic. A lego art mosaic has a size of 48 x 48 studs. From two sets you can build a 64 x 64 mosaic. You can choose any arbitrary mosaic size. The number of parts required to build the mosaic is displayed below.</p>
-			<h5>3. Select the lego art sets for the mosaic</h5>
-			<p>Available lego art sets are displayed in step 3. Use the input elements to adjust how many of each set you would like to use for the mosaic. The website internally stores how many parts (and of which color) are present in the sets. The number of available parts is displayed according to the user input.</p>
-			<h5>4. Calculate mosaic</h5>
-			<p>Use the "Calculate" button to start the calculation of the mosaic. The button is only active if the number of available parts in step 3 is larger than the number of required parts (step 2). The calculation takes a few seconds to finish. The progress of the computation is indicated.</p>
-			<h5>5. Download instructions</h5>
-			<p>The website can generate a pdf with building instructions for you. When the calculation of the mosaic finished you can access your pdf with the "Download instructions (pdf)" button. In case the "Ignore black regions" option is chosen, ignored regions in the mosiac are labeled with "?" in the instruction. Fill these regions with remaining bricks.</p>
-			<h5>How it works - the algorithm</h5>
-			<p>The first step in creating lego art from custom images, is resizing to the final mosaic size. A bit of random noise is added to the raw color values to break color ties later on. Next, the color of each individual pixel is compared to all available colors within the selected brick sets. A color distance is calculated as the squared distance in RGB space. I have been experimenting with different color spaces, however, found that RGB works just fine. The actual calculation of the mosaic happens in two phases. First, the pixels are filled one-by-one with the best available color. If the best color is not available due to part limits, the next best color is chosen. In the second phase, individual parts are swapped with each other if this leads to a better joined color match. The swapping continues until no improvements can be made. This "brute force" calculation may take a while to finish, especially for larger mosaics.</p>
+		    <h5>1. 选择源图片</h5>
+			<p>使用文件选择工具从你的硬盘选择一个文件（如果用手机可以直接拍照）。图片会完全在浏览器中处理，<strong>不会上传到任何服务器</strong>！打开图片后，你会在文件输入下方看到预览。你可以选择裁切中心区域保持比例，或者拉伸缩放到目标尺寸。此外，下方滑块允许你（可选）修改亮度、对比度和颜色。如果你的图片有黑色背景（RGB=0,0,0），可以使用"忽略黑色区域"选项让算法专注于前景物体。</p>
+			<h5>2. 选择马赛克尺寸</h5>
+			<p>使用输入选择马赛克尺寸。一个乐高Art马赛克是 48 x 48 颗粒。两个套装可以拼 64 x 64 马赛克。你可以选择任意尺寸。下方会显示拼搭马赛克需要多少颗粒。</p>
+			<h5>3. 选择用于马赛克的乐高Art套装</h5>
+			<p>这里列出了可用的乐高Art套装。使用输入调整你想用几套这个套装。网站内部存储了每个套装包含哪些颜色和多少颗粒。根据你的输入显示可用颗粒总数。</p>
+			<h5>4. 计算马赛克</h5>
+			<p>点击"计算马赛克"按钮开始计算。只有当步骤3中可用颗粒数大于步骤2所需颗粒数时，按钮才可用。计算需要几秒钟完成，进度会显示出来。</p>
+			<h5>5. 下载说明书</h5>
+			<p>网站可以为你生成包含拼搭说明的PDF文件。计算完成后，你可以通过"下载拼搭说明书 (PDF)"按钮获取PDF。如果选择了"忽略黑色区域"选项，马赛克中被忽略的区域在说明书中标为"?"，可以用剩余颗粒填充这些区域。</p>
+			<h5>工作原理 - 算法介绍</h5>
+			<p>从自定义图片创建乐高艺术的第一步，是重新调整尺寸到最终马赛克尺寸。给原始颜色值添加一点随机噪声，以便后续打破颜色相等的情况。接下来，将每个像素的颜色与所选套装中所有可用颜色比较。颜色距离计算为RGB空间中的平方距离。作者尝试过不同颜色空间，但发现RGB效果就很好。实际马赛克计算分两个阶段进行。第一阶段，逐个像素用最佳可用颜色填充。如果最佳颜色因数量限制不可用，则选择下一个最佳颜色。第二阶段，如果交换两个像素之间的颗粒能改善整体颜色匹配，则进行交换。交换持续到无法再改善。这种"暴力"计算可能需要一段时间，对于较大马赛克尤其如此。</p>
 		  </div>
 		  <div class="modal-footer py-1">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
 		  </div>
 		</div>
 	  </div>
 	</div>
-	
+
 	<div class="modal fade" id="tippsModal" tabindex="-1" aria-labelledby="tippsModalLabel" aria-hidden="true">
 	  <div class="modal-dialog modal-lg">
 		<div class="modal-content">
 		  <div class="modal-header py-1 bg-light">
-			<h4 class="modal-title" id="tippsModalLabel">Tipps & Tricks</h4>
+			<h4 class="modal-title" id="tippsModalLabel">使用技巧</h4>
 			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		  </div>
 		  <div class="modal-body">
-			<h5>The input image</h5>
-			<p>The most critical part for a good result is the input image itself. Good contrast and a similar color distribution as the parts in lego art set of choice helps to produce good results. It is worth trying a few different images and different zooms/crops of your subject. A homogenous background can be beneficial. Therefore, you can replace the background with any plain color in an external image processing program.</p>
-			<h5>Color adjustments</h5>
-			<p>Play with the color sliders and see how it affects the resulting mosaic. Use the hue slider to adjust the overall color of your image and bring it closer to the available colors in the lego art set. Brightness and contrast can be used to shift the image into a similar brightness scale as the available colors. Sometimes it helps to desaturate the image to get better results. A less saturated image will favor brightness differences instead of actual color differences. If background takes up a lot of space in your input image, consider replacing it with black (RGB 0,0,0) in an external program. You can then use "Ignore black regions" to exclude these background regions from processing. The algorithm will only fill the object and can better distribute the available colors.</p>
-			<h5>Choice of lego art sets</h5>
-			<p>The resulting mosaic of course heavily depends on the choice of the lego art set that you have available. If you do not already own a lego art set which restricts your choice, feel free to experiment with different sets or even combinations thereof.</p>
-			<h5>Part limits</h5>
-			<p>I found the results to look more pleasing when the number of parts of a given color is limited through the choice of the brick sets. When part numbers are not limited, the result often looks flat with little color contrast. A restriction in the number of available parts forces the algorithm to use suboptimal colors, thereby, increasing the color space of the resulting mosaic. As a result, the mosaics will get a more artistic look. You can increase this effect by further restricting the part numbers through entering decimal numbers into the input field for the set count (e.g. Beatles: 0.9).</p>
-			<h5>Multiple images</h5>
-			<p>If you want to build multiple mosaics (and you own the necessary number of lego art sets to build them) it is advisable to produce a source image with all images stitched together, and adjust the mosaic size and brick set numbers accordingly. As a result, the algorithm is free to distribute the available parts between the source images.</p>
-			<h5>Final real-world adjustments</h5>
-			<p>Don't take the generated mosaic and instructions as the final truth. When you are done assembling your mosaic, you can still switch individual bricks to create a more aesthetically pleasing result. That's part of the fun.</p>
-			<h5>Try other pages for lego art mosaics</h5>
-			<p class="my-0">There are two other great sites, that I know of, that allow you to generate lego art-based mosaics with part limitations. Feel free to try them out.</p>
+			<h5>输入图片</h5>
+			<p>获得好结果最重要的因素是输入图片本身。良好的对比度和颜色分布与你选择的乐高套装相近，有助于产生好结果。值得尝试几张不同图片和不同裁切/缩放。均匀纯色背景效果更好，因此你可以先用外部图像处理软件将背景替换为纯色。</p>
+			<h5>颜色调整</h5>
+			<p>多试几个滑块组合，看看对最终马赛克的影响。使用色相滑块调整图片整体颜色，使其更接近乐高套装中的可用颜色。亮度和对比度可用于将图片移动到与可用颜色相近的亮度范围。有时降低饱和度能获得更好效果，饱和度较低的图片会更依赖亮度差异而不是实际颜色差异。如果背景在输入图片中占很大空间，可以考虑先用外部程序将背景替换为黑色(RGB 0,0,0)，然后使用"忽略黑色区域"排除这些背景区域。算法只会填充主体，可以更好地分配可用颜色。</p>
+			<h5>乐高Art套装选择</h5>
+			<p>最终马赛克效果当然很大程度上取决于你可用的乐高Art套装选择。如果你还没有乐高Art套装（因此选择不受限），尽管尝试不同套装甚至组合它们。</p>
+			<h5>颗粒数量限制</h5>
+			<p>作者发现，当给定颜色的颗粒数量受到套装选择限制时，结果看起来更悦目。当颗粒数量不受限制时，结果通常看起来平淡，缺乏色彩对比度。可用颗粒数量的限制迫使算法使用次优颜色，从而增加了最终马赛克的色彩空间。因此，马赛克会获得更艺术的外观。你可以通过在套装数量输入框输入小数（例如 Beatles: 0.9）来进一步增强这种效果。</p>
+			<h5>多张图片</h5>
+			<p>如果你想拼搭多个马赛克（并且你拥有必要数量的乐高Art套装），建议先将所有图片拼接成一张源图片，然后相应调整马赛克尺寸和套装数量。这样，算法可以自由地在源图片之间分配可用颗粒。</p>
+			<h5>最终手工调整</h5>
+			<p>不要把生成的马赛克和说明书当成最终真理。拼搭完成后，你仍然可以交换个别颗粒来获得更美观的结果。这也是乐趣的一部分。</p>
+			<h5>其他乐高艺术马赛克网站</h5>
+			<p class="my-0">我知道还有另外两个很棒的网站，也允许你基于乐高Art生成马赛克。你也可以试试它们。</p>
 			<p class="my-0"><a href="https://lego-art-remix.debkbanerji.com/">Lego Art Remix</a></p>
 			<p><a href="https://jgassen.shinyapps.io/legoartmosaic/">LEGO Art Mosaic Generator</a></p>
 		  </div>
 		  <div class="modal-footer py-1">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
 		  </div>
 		</div>
 	  </div>
 	</div>
-	
+
 	<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
 	  <div class="modal-dialog modal-lg">
 		<div class="modal-content">
 		  <div class="modal-header py-1 bg-light">
-			<h4 class="modal-title" id="aboutModalLabel">About custombrickmosaic.github.io</h4>
+			<h4 class="modal-title" id="aboutModalLabel">关于 custombrickmosaic.github.io</h4>
 			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		  </div>
 		  <div class="modal-body">
 			<div class="row">
-				<h5>About me</h5>
+				<h5>关于作者</h5>
 				<div class="col-12">
 					<img src="cf_about.png" class="rounded-circle" style='float:left;width:150px;height:150px; margin-right:10px;' alt="mosaic styled portrait">
-					<p>"I have been a lego fan during my entire childhood and got re-exposed through my kids recently. In my job, I am working on image analysis and computer vision problems. Bringing my love for lego and my enthusiasm for image processing and coding together to bring this website to life was really exciting. I hope that many of you enjoy using this site to build their own beautiful lego art mosaics."</p>
+					<p>"我整个童年都是乐高粉丝，最近通过孩子重新接触到乐高。我的工作是研究图像分析和计算机视觉问题。把我对乐高的热爱和对图像处理与编码的热情结合在一起，把这个网站带给大家，真的很兴奋。我希望你们很多人喜欢使用这个网站来构建自己美丽的乐高艺术马赛克。"</p>
 					<p class="text-end">Christoph Fritzsch</p>
 				</div>
 			</div>
-			<h5>About the site</h5>
-			<p>Ever since the release of the first lego art mosaics, I wondered whether one could use them to create mosaics from own images. I knew this would require a custom algorithm that would account for limited amounts of certain colors. I figured that this would be a nice exercise in which I could use my experience in image analysis. Implementing a working prototype only took a few hours (it probably took me the longest to get the colors and part lists from <a href="https://rebrickable.com/">rebrickable.com</a>) and the results were much better than anticipated for this simple approach. So, I wanted to share it with the community. Having no experience with web design, hosting or cloud compute, I was quite happy that I was recommended to use JavaScript. This required re-implementation of the algorithm but allowed to run everything within the browser. This lifted the burden of organizing cloud compute and, at the same time, lowered data privacy concerns (in case images have to be uploaded to a server). In terms of hosting, I chose github pages, as this supports JavaScript, is easy to set up, and comes at no additional cost. During the first quarter of 2021, I created the basic functionality and layout of this site. Be aware that I am no professional web developer and this is my first JavaScript project. I am sure there are a few issues left to be solved ...</p>
-			<p>Source code is available on <a href="https://github.com/custombrickmosaic/custombrickmosaic.github.io">Github</a>. Feel free to open issues for bugs or enhancement requests.</p>
-			<h5>Data privacy</h5>
-			<p>The algorithm runs entirely within your web browser and all calculations are performed on your machine. Hence, no data is required to be uploaded to any server and data privacy is assured.</p>
+			<h5>关于本站</h5>
+			<p>自从第一款乐高Art马赛克发布以来，我一直想知道是否可以用它们从自定义图片创建马赛克。我知道这需要一个自定义算法来应对某些颜色数量有限的情况。我觉得这是一个很好的练习，可以用我在图像分析方面的经验。实现一个可用原型只花了几个小时（从rebrickable.com获取颜色和零件清单花了最长时间），结果比预期好很多。所以我想分享给社区。我没有网页设计经验，也没有托管或云计算经验，有人推荐我使用JavaScript。这需要重新实现算法，但允许一切在浏览器中运行。这减轻了组织云计算的负担，同时也降低了数据隐私问题（如果图片必须上传到服务器）。托管方面，我选择了GitHub Pages，因为它支持JavaScript，容易设置，而且免费。在2021年第一季度，我创建了这个网站的基本功能和布局。请注意，我不是专业网页开发者，这是我的第一个JavaScript项目。我相信还有一些问题需要解决...</p>
+			<p>源代码在 <a href="https://github.com/custombrickmosaic/custombrickmosaic.github.io">GitHub</a> 上开放。欢迎提交bug或增强需求。</p>
+			<h5>数据隐私</h5>
+			<p>算法完全在你的网页浏览器中运行，所有计算都在你的本地机器上执行。因此，不需要将数据上传到任何服务器，数据隐私得到保证。</p>
 		  </div>
 		  <div class="modal-footer py-1">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
 		  </div>
 		</div>
 	  </div>
