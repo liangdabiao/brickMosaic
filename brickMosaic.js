@@ -6,10 +6,17 @@ var finalMosaicIm = [];
 var validImagePresent = false;
 var imageFilename = "";
 
+// 自定义裁剪状态 - 使用 Cropper.js
+var customCrop = {
+    enabled: false,         // 是否启用了自定义裁剪
+    cropper: null,          // Cropper 实例
+    croppedCanvas: null,    // 裁剪后的canvas
+};
 
 function init() {
 	document.getElementById("buttonCalculate").disabled = true;
 	document.getElementById("buttonDownloadPDF").disabled = true;
+	document.getElementById("buttonDownloadImage").disabled = true;
 	
 	document.getElementById("hueRange").value = 0;
 	document.getElementById("saturationRange").value = 0;
@@ -61,12 +68,23 @@ document.getElementById("imageFile").addEventListener("change", function() {
 			document.getElementById("contrastRange").value = 0;
 			document.getElementById("shadowsRange").value = 0;
 			document.getElementById("highlightsRange").value = 0;
-			document.getElementById("hueRangeLabel").innerHTML = "Hue: 0";
-			document.getElementById("saturationRangeLabel").innerHTML = "Saturation: 0";
-			document.getElementById("valueRangeLabel").innerHTML = "Value: 0";
-			document.getElementById("contrastRangeLabel").innerHTML = "Contrast: 0";
-			document.getElementById("shadowsRangeLabel").innerHTML = "Shadows: 0";
-			document.getElementById("highlightsRangeLabel").innerHTML = "Highlights: 0";
+			document.getElementById("hueRangeLabel").innerHTML = "色相: 0";
+			document.getElementById("saturationRangeLabel").innerHTML = "饱和度: 0";
+			document.getElementById("valueRangeLabel").innerHTML = "明度: 0";
+			document.getElementById("contrastRangeLabel").innerHTML = "对比度: 0";
+			document.getElementById("shadowsRangeLabel").innerHTML = "暗部: 0";
+			document.getElementById("highlightsRangeLabel").innerHTML = "亮部: 0";
+
+			// 重置自定义裁剪状态，恢复到裁切中心模式
+			customCrop.enabled = false;
+			customCrop.croppedCanvas = null;
+			if (customCrop.cropper) {
+				customCrop.cropper.destroy();
+				customCrop.cropper = null;
+			}
+			document.getElementById("cropCenterSquareButton").classList.add('active');
+			document.getElementById("scaleToSquareButton").classList.remove('active');
+			document.getElementById("customCropButton").classList.remove('active');
 
 			previewImage.decode()
 				.then(() => {
@@ -77,6 +95,7 @@ document.getElementById("imageFile").addEventListener("change", function() {
 					document.getElementById("imageAdjustmentsRow").hidden = false;
 					document.getElementById("colorAdjustmentsRow").hidden = false;
 					document.getElementById("buttonDownloadPDF").disabled = true;
+					document.getElementById("buttonDownloadImage").disabled = true;
 					
 					validImagePresent = true;
 					if ((document.getElementById("widthInputValue").value * document.getElementById("heightInputValue").value) <= updatePartList()) {
@@ -91,6 +110,7 @@ document.getElementById("imageFile").addEventListener("change", function() {
 					document.getElementById("colorAdjustmentsRow").hidden = true;
 					document.getElementById("buttonCalculate").disabled = true;
 					document.getElementById("buttonDownloadPDF").disabled = true;
+					document.getElementById("buttonDownloadImage").disabled = true;
 				})
 		}
 		reader.readAsDataURL(this.files[0]);
@@ -106,6 +126,7 @@ document.getElementById("imageFile").addEventListener("change", function() {
         document.getElementById("colorAdjustmentsRow").hidden = true;
         document.getElementById("buttonCalculate").disabled = true;
 		document.getElementById("buttonDownloadPDF").disabled = true;
+		document.getElementById("buttonDownloadImage").disabled = true;
 
         if (this.files[0]) {
             alert('The file you selected is not a valid image file');
@@ -146,6 +167,10 @@ document.getElementById("buttonDownloadPDF")
     .addEventListener("click", async () => {
         await generateInstructions();
     });
+document.getElementById("buttonDownloadImage")
+    .addEventListener("click", async () => {
+        await generateInstructionsImage();
+    });
 	
 document.getElementById("widthInputValue").addEventListener('change', async () => {
 	const widthInput = document.getElementById("widthInputValue");
@@ -157,6 +182,9 @@ document.getElementById("widthInputValue").addEventListener('change', async () =
 	const ratioW = Math.round(w / 16);
 	const ratioH = Math.round(h / 16);
 	document.getElementById("requiredPartsString").innerHTML = `(${ratioW}:${ratioH}) 所需颗粒: ${numReqParts}`;
+
+	// 更新自定义裁剪的宽高比
+	customCrop.ratio = w / h;
 
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas');
 	thumbnailCanvas.height = thumbnailCanvas.width * document.getElementById("heightInputValue").value / widthInput.value;
@@ -187,6 +215,9 @@ document.getElementById("heightInputValue").addEventListener('change', async () 
 	const ratioW = Math.round(w / 16);
 	const ratioH = Math.round(h / 16);
 	document.getElementById("requiredPartsString").innerHTML = `(${ratioW}:${ratioH}) 所需颗粒: ${numReqParts}`;
+
+	// 更新自定义裁剪的宽高比
+	customCrop.ratio = w / h;
 
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas')
 	thumbnailCanvas.height = thumbnailCanvas.width * heightInput.value / document.getElementById("widthInputValue").value;
@@ -284,6 +315,13 @@ document.getElementById("cropCenterSquareButton")
     .addEventListener("click", async () => {
         document.getElementById("scaleToSquareButton").classList.remove('active');
 		document.getElementById("cropCenterSquareButton").classList.add('active');
+		document.getElementById("customCropButton").classList.remove('active');
+		customCrop.enabled = false;
+		customCrop.croppedCanvas = null;
+		if (customCrop.cropper) {
+			customCrop.cropper.destroy();
+			customCrop.cropper = null;
+		}
 		await drawPreviewImage(true);
     });
 	
@@ -291,15 +329,53 @@ document.getElementById("scaleToSquareButton")
     .addEventListener("click", async () => {
         document.getElementById("cropCenterSquareButton").classList.remove('active');
 		document.getElementById("scaleToSquareButton").classList.add('active');
+		document.getElementById("customCropButton").classList.remove('active');
+		customCrop.enabled = false;
+		customCrop.croppedCanvas = null;
+		if (customCrop.cropper) {
+			customCrop.cropper.destroy();
+			customCrop.cropper = null;
+		}
 		await drawPreviewImage(true);
     });
+
+document.getElementById("customCropButton")
+    .addEventListener("click", async () => {
+        document.getElementById("cropCenterSquareButton").classList.remove('active');
+		document.getElementById("scaleToSquareButton").classList.remove('active');
+		document.getElementById("customCropButton").classList.add('active');
+		// 打开裁剪模态框
+		openCustomCropModal();
+    });
+
+// 确认裁剪按钮
+document.getElementById("confirmCropBtn")
+	.addEventListener("click", async () => {
+		confirmCustomCrop();
+	});
+
+// 取消裁剪按钮
+document.getElementById("cancelCropBtn")
+	.addEventListener("click", async () => {
+		cancelCustomCrop();
+		// 如果之前没有裁剪，恢复到裁切中心模式
+		if (!customCrop.enabled) {
+			document.getElementById("cropCenterSquareButton").classList.add('active');
+			document.getElementById("scaleToSquareButton").classList.remove('active');
+			document.getElementById("customCropButton").classList.remove('active');
+		}
+		await drawPreviewImage(true);
+		if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+			generateValidColoringAndDraw();
+		}
+	});
 
 
 
 document.getElementById("saturationRange")
 	.addEventListener("change", async () => {
 		const saturationValue = document.getElementById("saturationRange").value;
-        document.getElementById("saturationRangeLabel").innerHTML = `Saturation: ${saturationValue}`;
+        document.getElementById("saturationRangeLabel").innerHTML = `饱和度: ${saturationValue}`;
         await drawPreviewImage(true);
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
         	generateValidColoringAndDraw();
@@ -312,7 +388,7 @@ document.getElementById("saturationRange")
 document.getElementById("hueRange")
 	.addEventListener("change", async () => {
 		const hueValue = document.getElementById("hueRange").value;
-        document.getElementById("hueRangeLabel").innerHTML = `Hue: ${hueValue}`;
+        document.getElementById("hueRangeLabel").innerHTML = `色相: ${hueValue}`;
         await drawPreviewImage(true);
         // 自动重新计算马赛克，显示调整后的效果
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
@@ -326,7 +402,7 @@ document.getElementById("hueRange")
 document.getElementById("valueRange")
 	.addEventListener("change", async () => {
 		const valueValue = document.getElementById("valueRange").value;
-        document.getElementById("valueRangeLabel").innerHTML = `Value: ${valueValue}`;
+        document.getElementById("valueRangeLabel").innerHTML = `明度: ${valueValue}`;
         await drawPreviewImage(true);
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
         	generateValidColoringAndDraw();
@@ -339,7 +415,7 @@ document.getElementById("valueRange")
 document.getElementById("contrastRange")
 	.addEventListener("change", async () => {
 		const contrastValue = document.getElementById("contrastRange").value;
-        document.getElementById("contrastRangeLabel").innerHTML = `Contrast: ${contrastValue}`;
+        document.getElementById("contrastRangeLabel").innerHTML = `对比度: ${contrastValue}`;
         await drawPreviewImage(true);
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
         	generateValidColoringAndDraw();
@@ -352,7 +428,7 @@ document.getElementById("contrastRange")
 document.getElementById("shadowsRange")
 	.addEventListener("change", async () => {
 		const shadowsValue = document.getElementById("shadowsRange").value;
-        document.getElementById("shadowsRangeLabel").innerHTML = `Shadows: ${shadowsValue}`;
+        document.getElementById("shadowsRangeLabel").innerHTML = `暗部: ${shadowsValue}`;
         await drawPreviewImage(true);
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
         	generateValidColoringAndDraw();
@@ -365,7 +441,7 @@ document.getElementById("shadowsRange")
 document.getElementById("highlightsRange")
 	.addEventListener("change", async () => {
 		const highlightsValue = document.getElementById("highlightsRange").value;
-        document.getElementById("highlightsRangeLabel").innerHTML = `Highlights: ${highlightsValue}`;
+        document.getElementById("highlightsRangeLabel").innerHTML = `亮部: ${highlightsValue}`;
         await drawPreviewImage(true);
         if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
         	generateValidColoringAndDraw();
@@ -569,12 +645,23 @@ async function drawPreviewImage (drawIgnored) { //hsvChanged, contrastChanged
 	const highlightsValue = document.getElementById("highlightsRange").value;
 	const intermediateSize = 200;
 
+	var sourceImage = previewImage;
+	var sourceWidth = previewImage.width;
+	var sourceHeight = previewImage.height;
+
+	// 如果启用了自定义裁剪，使用裁剪后的图像
+	if (customCrop.enabled && customCrop.croppedCanvas) {
+		sourceImage = customCrop.croppedCanvas;
+		sourceWidth = customCrop.croppedCanvas.width;
+		sourceHeight = customCrop.croppedCanvas.height;
+	}
+
 	var tmpCanvas = document.createElement('canvas');
 	tmpCanvas.width = intermediateSize;
-	tmpCanvas.height = intermediateSize * previewImage.height/previewImage.width;
+	tmpCanvas.height = intermediateSize * sourceHeight / sourceWidth;
 
 	const context = tmpCanvas.getContext("2d");
-	context.drawImage(previewImage, 0, 0, previewImage.width, previewImage.height, 0, 0, tmpCanvas.width, tmpCanvas.height);
+	context.drawImage(sourceImage, 0, 0, sourceWidth, sourceHeight, 0, 0, tmpCanvas.width, tmpCanvas.height);
 	var pixels = context.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height).data;
 
 	var imgData = context.createImageData(tmpCanvas.width, tmpCanvas.height);
@@ -605,23 +692,32 @@ async function drawPreviewImage (drawIgnored) { //hsvChanged, contrastChanged
 	
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas');
 	var thumbnailContext = thumbnailCanvas.getContext('2d');
-	
+
+	// 更新canvas尺寸以匹配目标马赛克宽高比
+	thumbnailCanvas.height = thumbnailCanvas.width * document.getElementById("heightInputValue").value / document.getElementById("widthInputValue").value;
+
 	if (document.getElementById('cropCenterSquareButton').classList.value.includes("active")) {
-		thumbnailContext.drawImage(tmpImage, 
+		thumbnailContext.drawImage(tmpImage,
 						Math.max(0,(tmpImage.width-tmpImage.height/thumbnailCanvas.height*thumbnailCanvas.width)/2),
 						Math.max(0,(tmpImage.height-tmpImage.width/thumbnailCanvas.width*thumbnailCanvas.height)/2),
 						tmpImage.width - Math.max(0,(tmpImage.width-tmpImage.height/thumbnailCanvas.height*thumbnailCanvas.width)),
 						tmpImage.height - Math.max(0,(tmpImage.height-tmpImage.width/thumbnailCanvas.width*thumbnailCanvas.height)),
 						0, 0,
 						thumbnailCanvas.width, thumbnailCanvas.height);
+	} else if (document.getElementById("customCropButton").classList.value.includes("active") && customCrop.enabled) {
+		// 自定义裁剪已经在cropper处理了，直接填满
+		thumbnailContext.drawImage(tmpImage,
+						0, 0,
+						tmpImage.width, tmpImage.height,
+						0, 0,
+						thumbnailCanvas.width, thumbnailCanvas.height);
 	} else {
-		thumbnailContext.drawImage(tmpImage, 
+		thumbnailContext.drawImage(tmpImage,
 						0, 0,
 						tmpImage.width, tmpImage.height,
 						0, 0,
 						thumbnailCanvas.width, thumbnailCanvas.height);
 	}
-	
 }
 
 
@@ -941,6 +1037,7 @@ const generateValidColoringAndDraw = async () => {
 	drawMosaic(im);
 	await sleep(50);
 	document.getElementById("buttonDownloadPDF").disabled = false;
+	document.getElementById("buttonDownloadImage").disabled = false;
 }
 
 
@@ -964,7 +1061,11 @@ async function generateValidColoring () {
 		tmpCanvas.width = imageData.width;
 		tmpCanvas.height = imageData.height;
 		const context = tmpCanvas.getContext("2d");
-		context.drawImage(previewImage, 0, 0, previewImage.width, previewImage.height, 0, 0, imageData.width, imageData.height);
+		var rawSourceImage = previewImage;
+		if (customCrop.enabled && customCrop.croppedCanvas) {
+			rawSourceImage = customCrop.croppedCanvas;
+		}
+		context.drawImage(rawSourceImage, 0, 0, rawSourceImage.width, rawSourceImage.height, 0, 0, imageData.width, imageData.height);
 		var rawPixels = context.getImageData(0, 0, imageData.width, imageData.height).data;
 	}
 	
@@ -1484,6 +1585,312 @@ function sleep(ms) {
 }
 
 
+// ========== 说明书长图生成 (Canvas → PNG) ==========
+
+const IMG_SCALE = 6; // 1mm = 6px (2x sharpness)
+const IMG_PAGE_W = 210 * IMG_SCALE; // A4 width in px = 1260
+const IMG_PAGE_H = 297 * IMG_SCALE; // A4 height in px = 1782
+
+function imgMm(mm) { return mm * IMG_SCALE; }
+
+function generateImageTitlePage(ctx, offsetY, timeString) {
+    const W = IMG_PAGE_W;
+    const H = IMG_PAGE_H;
+
+    const mosaicCanvas = document.getElementById("previewMosaicCanvas");
+
+    const sectionSize = 16;
+    const width = Math.ceil(finalMosaicIm.length / sectionSize) * sectionSize;
+    const height = Math.ceil(finalMosaicIm[0].length / sectionSize) * sectionSize;
+    const realWidth = finalMosaicIm.length;
+    const realHeight = finalMosaicIm[0].length;
+    const numSections = Math.ceil(width / sectionSize) * Math.ceil(height / sectionSize);
+
+    // Draw mosaic preview
+    const canvasWidthMM = Math.min(W * 0.6, ((H - imgMm(100)) * width) / height);
+    const canvasHeightMM = Math.min((H - imgMm(100)), (W * 0.6 * height) / width);
+    const drawW = canvasWidthMM * realWidth / width;
+    const drawH = canvasHeightMM * realHeight / height;
+    const drawX = W * 0.25;
+    const drawY = imgMm(50);
+    ctx.drawImage(mosaicCanvas, drawX, drawY + offsetY, drawW, drawH);
+
+    // Title
+    ctx.fillStyle = "black";
+    ctx.font = `bold ${imgMm(12)}px sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.fillText("Custom Brick Mosaic", imgMm(30), imgMm(25) + offsetY);
+
+    // Source info
+    ctx.font = `${imgMm(6)}px sans-serif`;
+    ctx.fillText(`Source: ${imageFilename}`, imgMm(30), imgMm(34) + offsetY);
+
+    const numSectionsX = Math.ceil(width / sectionSize);
+    const numSectionsY = Math.ceil(height / sectionSize);
+    ctx.fillText(`Resolution: ${realWidth} x ${realHeight} (in ${numSectionsX} x ${numSectionsY} sections)`, imgMm(30), imgMm(40) + offsetY);
+
+    // Section grid overlay
+    ctx.strokeStyle = "rgb(200,200,200)";
+    ctx.lineWidth = imgMm(0.5);
+    ctx.font = `bold ${imgMm(12)}px sans-serif`;
+    ctx.fillStyle = "rgb(200,200,200)";
+    for (var x = 0; x < numSectionsX; x++) {
+        for (var y = 0; y < numSectionsY; y++) {
+            const rx = drawX + x / numSectionsX * canvasWidthMM;
+            const ry = drawY + y / numSectionsY * canvasHeightMM + offsetY;
+            const rw = canvasWidthMM / numSectionsX;
+            const rh = canvasHeightMM / numSectionsY;
+            ctx.strokeRect(rx, ry, rw, rh);
+            ctx.fillText(`${x + y * numSectionsX + 1}`, rx + rw * 0.3, ry + rh * 0.5);
+        }
+    }
+
+    // Part list - reassign colors
+    var colorCounts = [];
+    for (var x = 0; x < realWidth; x++) {
+        for (var y = 0; y < realHeight; y++) {
+            if (colorCounts[finalMosaicIm[x][y][3]] === undefined) {
+                colorCounts[finalMosaicIm[x][y][3]] = 1;
+            } else {
+                colorCounts[finalMosaicIm[x][y][3]] = colorCounts[finalMosaicIm[x][y][3]] + 1;
+            }
+        }
+    }
+    var reassignedColors = [];
+    var count = 0;
+    for (var i = 0; i < colorCounts.length; i++) {
+        if (!(colorCounts[i] === undefined)) {
+            reassignedColors[count] = i;
+            count += 1;
+        }
+    }
+
+    // Draw part list background
+    var radius = W * 0.013;
+    var baseFontSize = imgMm(4.5);
+    if (reassignedColors.length < 23) {
+        radius = W * 0.02;
+        baseFontSize = imgMm(6);
+    }
+
+    ctx.fillStyle = "rgb(40,40,40)";
+    const legendX = W * 0.07;
+    const legendY = imgMm(50) + offsetY;
+    const legendW = W * 0.05;
+    const legendH = W * 0.005 + reassignedColors.length * 2 * (radius + imgMm(0.15));
+    ctx.fillRect(legendX, legendY, legendW, legendH);
+
+    ctx.lineWidth = 1;
+    for (var i = 0; i < reassignedColors.length; i++) {
+        const clr = reassignedColors[i];
+        const r = fullPartList[clr][0], g = fullPartList[clr][1], b = fullPartList[clr][2];
+        if (r + g + b > 380) {
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "black";
+        } else {
+            ctx.strokeStyle = "white";
+            ctx.fillStyle = "white";
+        }
+
+        const cx = legendX + radius * 1.25;
+        const cy = legendY + W * 0.005 * (i + 1) + (i + 0.5) * 2 * radius;
+
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        if (fullPartList[clr][4] == 3024) {
+            ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+        } else {
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius - imgMm(0.2), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        if (fullPartList[clr][4] == 6141 || fullPartList[clr][4] == 3024) {
+            const contrastRGB = getContrastColor(r, g, b);
+            ctx.strokeStyle = `rgb(${contrastRGB[0]},${contrastRGB[1]},${contrastRGB[2]})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(cx, cy, (radius * 0.7) - imgMm(0.2), 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Number on swatch
+        ctx.font = `bold ${baseFontSize * 0.8}px sans-serif`;
+        ctx.textBaseline = "middle";
+        if (fullPartList[clr][4] == 3) {
+            ctx.fillStyle = (r + g + b > 380) ? "black" : "white";
+            ctx.fillText("?", cx - baseFontSize * 0.3, cy + baseFontSize * 0.1);
+        } else {
+            const colorNumber = i + 1;
+            ctx.fillStyle = (r + g + b > 380) ? "black" : "white";
+            ctx.fillText(colorNumber.toString(), cx - (colorNumber > 9 ? baseFontSize * 0.5 : baseFontSize * 0.3), cy + baseFontSize * 0.1);
+        }
+
+        // Count text
+        ctx.fillStyle = "black";
+        ctx.font = `${baseFontSize}px sans-serif`;
+        ctx.textBaseline = "middle";
+        ctx.fillText(`${colorCounts[clr]} x`, cx + 2.5 * radius, cy - baseFontSize * 0.1);
+
+        // Element ID
+        ctx.font = `${baseFontSize * 0.55}px sans-serif`;
+        ctx.fillText(`${fullPartList[clr][5]}`, cx + 2.6 * radius, cy + baseFontSize * 0.7);
+    }
+
+    // Footer
+    ctx.fillStyle = "black";
+    ctx.font = `${imgMm(5)}px sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.fillText("Downloaded from custombrickmosaic.github.io", imgMm(30), H - imgMm(20) + offsetY);
+    ctx.fillText(timeString, imgMm(30), H - imgMm(15) + offsetY);
+    ctx.fillText(`Page 1 / ${numSectionsX * numSectionsY + 1}`, W - imgMm(50), H - imgMm(15) + offsetY);
+}
+
+function generateImageSectionPage(ctx, offsetY, sectionNumber, timeString) {
+    const W = IMG_PAGE_W;
+    const H = IMG_PAGE_H;
+
+    const sectionSize = 16;
+    const radius = W * 0.7 / sectionSize / 2;
+
+    const width = finalMosaicIm.length;
+    const height = finalMosaicIm[0].length;
+    const numSectionsX = Math.ceil(width / sectionSize);
+    const numSectionsY = Math.ceil(height / sectionSize);
+    const xOffset = (sectionNumber) % numSectionsX * sectionSize;
+    const yOffset = Math.floor((sectionNumber) / numSectionsX) * sectionSize;
+
+    // Reassign colors
+    var colorCounts = [];
+    for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+            if (colorCounts[finalMosaicIm[x][y][3]] === undefined) {
+                colorCounts[finalMosaicIm[x][y][3]] = 1;
+            } else {
+                colorCounts[finalMosaicIm[x][y][3]] = colorCounts[finalMosaicIm[x][y][3]] + 1;
+            }
+        }
+    }
+    var reassignedColors = [];
+    var count = 0;
+    for (var i = 0; i < colorCounts.length; i++) {
+        if (!(colorCounts[i] === undefined)) {
+            reassignedColors[i] = count;
+            count += 1;
+        }
+    }
+
+    // Header
+    ctx.fillStyle = "black";
+    ctx.font = `bold ${imgMm(12)}px sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.fillText(`Section ${sectionNumber + 1}`, imgMm(30), imgMm(25) + offsetY);
+
+    // Black grid background
+    ctx.fillStyle = "black";
+    ctx.fillRect(W * 0.15, imgMm(40) + offsetY, W * 0.7, W * 0.7);
+
+    ctx.lineWidth = 1;
+    ctx.font = `bold ${imgMm(5)}px sans-serif`;
+    for (var x = 0; x < sectionSize; x++) {
+        for (var y = 0; y < sectionSize; y++) {
+            if (((x + xOffset) < width) && ((y + yOffset) < height)) {
+                const im = finalMosaicIm[x + xOffset][y + yOffset];
+                const r = im[0], g = im[1], b = im[2];
+                const partIdx = im[3];
+
+                const isBright = r + g + b > 380;
+                const cx = W * 0.15 + (x * 2 + 1) * radius;
+                const cy = imgMm(40) + (y * 2 + 1) * radius + offsetY;
+
+                // Draw brick shape
+                ctx.fillStyle = `rgb(${r},${g},${b})`;
+                if (fullPartList[partIdx][4] == 3024) {
+                    ctx.fillRect(cx - radius + imgMm(0.15), cy - radius + imgMm(0.15), radius * 2 - imgMm(0.3), radius * 2 - imgMm(0.3));
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius - imgMm(0.2), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Contrast ring
+                if (fullPartList[partIdx][4] == 6141 || fullPartList[partIdx][4] == 3024) {
+                    const contrastRGB = getContrastColor(fullPartList[partIdx][0], fullPartList[partIdx][1], fullPartList[partIdx][2]);
+                    ctx.strokeStyle = `rgb(${contrastRGB[0]},${contrastRGB[1]},${contrastRGB[2]})`;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, (radius * 0.7) - imgMm(0.2), 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // Number on brick
+                ctx.textBaseline = "middle";
+                if (fullPartList[partIdx][4] == 3) {
+                    ctx.fillStyle = isBright ? "black" : "white";
+                    ctx.fillText("?", cx - imgMm(1), cy + imgMm(1));
+                } else {
+                    const colorNumber = reassignedColors[partIdx] + 1;
+                    ctx.fillStyle = isBright ? "black" : "white";
+                    ctx.fillText(colorNumber.toString(), cx - imgMm(1) - (colorNumber > 9 ? imgMm(3) : 0), cy + imgMm(1));
+                }
+            }
+        }
+    }
+
+    // Footer
+    ctx.fillStyle = "rgb(200,200,200)";
+    ctx.font = `${imgMm(5)}px sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.fillText("Downloaded from custombrickmosaic.github.io", imgMm(30), H - imgMm(20) + offsetY);
+    ctx.fillText(timeString, imgMm(30), H - imgMm(15) + offsetY);
+    ctx.fillText(`Page ${sectionNumber + 2} / ${numSectionsX * numSectionsY + 1}`, W - imgMm(50), H - imgMm(15) + offsetY);
+}
+
+async function generateInstructionsImage() {
+    const today = new Date(Date.now());
+    const timeString = today.toUTCString();
+
+    document.getElementById("pdf-progress-bar").style.width = "0%";
+    document.getElementById("pdf-progress-container").hidden = false;
+    document.getElementById("buttonDownloadImage").hidden = true;
+
+    const sectionSize = 16;
+    const numSections = Math.ceil(finalMosaicIm.length / sectionSize) * Math.ceil(finalMosaicIm[0].length / sectionSize);
+    const totalPages = numSections + 1;
+
+    // Create tall canvas
+    const totalHeight = IMG_PAGE_H * totalPages;
+    const canvas = document.createElement('canvas');
+    canvas.width = IMG_PAGE_W;
+    canvas.height = totalHeight;
+    const ctx = canvas.getContext("2d");
+
+    // White background
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Title page
+    generateImageTitlePage(ctx, 0, timeString);
+    document.getElementById("pdf-progress-bar").style.width = `${1 / totalPages * 100}%`;
+    await sleep(50);
+
+    // Section pages
+    for (var i = 0; i < numSections; i++) {
+        const offsetY = IMG_PAGE_H * (i + 1);
+        generateImageSectionPage(ctx, offsetY, i, timeString);
+        document.getElementById("pdf-progress-bar").style.width = `${(i + 2) / totalPages * 100}%`;
+        await sleep(50);
+    }
+
+    // Download
+    const link = document.createElement('a');
+    link.download = `Custom-Brick-Mosaic-Instructions_${imageFilename.split('.').slice(0, -1).join('.')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    document.getElementById("pdf-progress-container").hidden = true;
+    document.getElementById("buttonDownloadImage").hidden = false;
+}
+
+
 
 
 
@@ -1552,3 +1959,98 @@ function deltaE(labA, labB){
   var i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
   return i < 0 ? 0 : Math.sqrt(i);
 }
+
+
+// ========== 自定义裁剪功能 - 使用 Cropper.js ==========
+
+// 全局状态
+var customCrop = {
+    enabled: false,         // 是否启用了自定义裁剪
+    cropper: null,          // Cropper 实例
+    croppedCanvas: null,    // 裁剪后的canvas
+};
+
+// 打开裁剪模态框
+function openCustomCropModal() {
+    const modalEl = document.getElementById('customCropModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
+    const cropImage = document.getElementById('cropImage');
+
+    // 使用原始图片
+    cropImage.src = previewImage.src;
+
+    function initCropper() {
+        // 获取目标宽高比
+        const w = parseInt(document.getElementById("widthInputValue").value);
+        const h = parseInt(document.getElementById("heightInputValue").value);
+        const aspectRatio = w / h;
+
+        // 销毁之前的实例
+        if (customCrop.cropper) {
+            customCrop.cropper.destroy();
+            customCrop.cropper = null;
+        }
+
+        // 创建新的 Cropper 实例
+        customCrop.cropper = new Cropper(cropImage, {
+            aspectRatio: aspectRatio,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            rotatable: false,
+            scalable: false,
+            background: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            responsive: true
+        });
+    }
+
+    // 等 modal 完全展开后再初始化 cropper，否则容器宽度为 0
+    cropImage.onload = function() {
+        if (modalEl.classList.contains('show')) {
+            initCropper();
+        } else {
+            modalEl.addEventListener('shown.bs.modal', function handler() {
+                modalEl.removeEventListener('shown.bs.modal', handler);
+                initCropper();
+            });
+        }
+    };
+
+    modal.show();
+}
+
+// 确认裁剪
+function confirmCustomCrop() {
+    if (!customCrop.cropper) return;
+
+    // 获取裁剪后的canvas
+    const canvas = customCrop.cropper.getCroppedCanvas();
+    customCrop.croppedCanvas = canvas;
+    customCrop.enabled = true;
+
+    // 关闭模态框
+    const modal = bootstrap.Modal.getInstance(document.getElementById('customCropModal'));
+    modal.hide();
+
+    // 重绘预览并自动重新计算
+    drawPreviewImage(true);
+    if (validImagePresent && !document.getElementById("buttonCalculate").disabled) {
+        generateValidColoringAndDraw();
+    }
+}
+
+// 取消裁剪
+function cancelCustomCrop() {
+    customCrop.enabled = false;
+    customCrop.croppedCanvas = null;
+    if (customCrop.cropper) {
+        customCrop.cropper.destroy();
+        customCrop.cropper = null;
+    }
+}
+

@@ -5,7 +5,10 @@
       "Bash(find:*)",
       "Bash(for:*)",
       "Bash(wc:*)",
-      "Bash(wc -c \"D:/custombrickmosaic.github.io-master/brickMosaic.js\")"
+      "Bash(wc -c \"D:/custombrickmosaic.github.io-master/brickMosaic.js\")",
+      "Bash(xxd)",
+      "Bash(sed -i '444s|width:100%;max-height:70vh;overflow:hidden;|width:100%;min-height:400px;max-height:70vh;|' D:/custombrickmosaic.github.io-master/index.html)",
+      "Bash(sed -i '445s|style=\"display:block;max-width:100%;max-height:70vh;margin:0 auto;\"|style=\"display:block;width:100%;\"|' D:/custombrickmosaic.github.io-master/index.html)"
     ]
   },
   "enabledPlugins": {
