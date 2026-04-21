@@ -1,0 +1,14 @@
+<view class="page">
+  <canvas type="2d" id="cropCanvas" class="crop-canvas"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    disable-scroll></canvas>
+  <view class="crop-footer">
+    <text class="crop-hint">拖动裁剪框选择区域，双指缩放图片</text>
+    <view class="crop-actions">
+      <view class="crop-btn cancel" bindtap="cancelCrop">取消</view>
+      <view class="crop-btn confirm" bindtap="confirmCrop">确认裁剪</view>
+    </view>
+  </view>
+</view>

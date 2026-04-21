@@ -1,0 +1,147 @@
+page {
+  background-color: #F5F5F5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.6;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.btn-primary {
+  background: #007BFF;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.btn-primary.disabled {
+  background: #cccccc;
+}
+
+.btn-success {
+  background: #28A745;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.btn-success.disabled {
+  background: #cccccc;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn-group-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  background: #e9ecef;
+  color: #495057;
+}
+
+.btn-group-item.active {
+  background: #007BFF;
+  color: #fff;
+}
+
+.parts-info {
+  font-size: 24rpx;
+  color: #666;
+  text-align: right;
+  margin-top: 8rpx;
+}
+
+.parts-info .count {
+  font-weight: bold;
+  color: #333;
+}
+
+.parts-info .count.warning {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.set-row:last-child {
+  border-bottom: none;
+}
+
+.set-name {
+  font-size: 26rpx;
+  color: #333;
+  flex: 1;
+}
+
+.set-control {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.set-btn {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  background: #e9ecef;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #495057;
+}
+
+.set-input {
+  width: 80rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}
+
+.progress-bar-container {
+  height: 16rpx;
+  background: #e9ecef;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin: 16rpx 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #007BFF;
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}

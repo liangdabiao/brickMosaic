@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/gallery/gallery",
+    "pages/about/about",
+    "pages/crop/crop"
+  ],
+  "window": {
+    "navigationBarTitleText": "AI乐高马赛克",
+    "navigationBarBackgroundColor": "#007BFF",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F5F5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#007BFF",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "生成"
+      },
+      {
+        "pagePath": "pages/gallery/gallery",
+        "text": "说明书"
+      },
+      {
+        "pagePath": "pages/about/about",
+        "text": "帮助"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

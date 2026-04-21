@@ -1,0 +1,19 @@
+<view class="page">
+  <view wx:if="{{history.length > 0}}" class="gallery-list">
+    <view class="gallery-item" wx:for="{{history}}" wx:key="date" bindtap="previewImage" data-index="{{index}}">
+      <image class="gallery-thumb" src="{{item.thumbnail}}" mode="aspectFill"/>
+      <view class="gallery-info">
+        <text class="gallery-size">{{item.width}} x {{item.height}}</text>
+        <text class="gallery-date">{{item.date}}</text>
+      </view>
+      <view class="gallery-actions" catchtap="saveImage" data-index="{{index}}">
+        <text>保存</text>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="empty">
+    <view class="empty-icon">📋</view>
+    <view class="empty-text">暂无说明书记录</view>
+    <view class="empty-hint">生成马赛克后，长图将自动保存在这里</view>
+  </view>
+</view>

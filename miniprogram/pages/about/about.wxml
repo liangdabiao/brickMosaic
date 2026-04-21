@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">使用说明</view>
+    <view class="help-text">
+      <text class="help-step">1. 选择源图片</text>
+      <text class="help-desc">点击上传图片，图片完全在手机端处理，不会上传到任何服务器。</text>
+      <text class="help-step">2. 选择马赛克尺寸</text>
+      <text class="help-desc">设置马赛克的宽度和高度（颗粒数），一个乐高Art套装是48x48=2304颗粒。</text>
+      <text class="help-step">3. 选择乐高Art套装</text>
+      <text class="help-desc">选择你拥有的套装及数量，可用颗粒需大于等于所需颗粒。</text>
+      <text class="help-step">4. 计算马赛克</text>
+      <text class="help-desc">点击计算按钮，算法会自动分配最匹配的积木颜色。可使用颜色调整优化效果。</text>
+      <text class="help-step">5. 下载说明书</text>
+      <text class="help-desc">生成长图说明书并保存到相册，按说明拼搭即可。</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">使用技巧</view>
+    <view class="help-text">
+      <text class="help-tip">• 好的对比度是获得好结果的关键</text>
+      <text class="help-tip">• 使用色相滑块让图片颜色更接近乐高现有颜色</text>
+      <text class="help-tip">• 有时降低饱和度能获得更好效果</text>
+      <text class="help-tip">• 用暗部/亮部滑块精细控制明暗分布</text>
+      <text class="help-tip">• 输入小数（如0.9）限制套装数量，可获得更有艺术感的效果</text>
+      <text class="help-tip">• 如果图片有黑色背景，勾选"忽略黑色区域"</text>
+      <text class="help-tip">• 使用自定义裁切精确选择你想要的区域</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">关于</view>
+    <view class="help-text">
+      <text class="help-desc">本应用基于开源项目 custombrickmosaic.github.io 开发，将图片转换为乐高积木马赛克拼贴图。</text>
+      <text class="help-desc" style="margin-top:16rpx;">所有计算在手机端完成，图片不会上传到任何服务器，数据隐私得到保证。</text>
+      <text class="help-desc" style="margin-top:16rpx;">作者：Christoph Fritzsch</text>
+      <text class="help-desc">小程序版：liangdabiao</text>
+    </view>
+  </view>
+
+  <view style="height:40rpx;"></view>
+</view>

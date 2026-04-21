@@ -1,0 +1,126 @@
+<view class="page">
+  <!-- Step 1: Image Upload -->
+  <view class="card">
+    <view class="section-title">1. 选择源图片（图片不会上传）</view>
+    <view class="upload-area" wx:if="{{!hasImage}}" bindtap="chooseImage">
+      <view class="upload-icon">+</view>
+      <view class="upload-text">点击选择图片</view>
+    </view>
+    <view wx:else>
+      <image class="preview-img" src="{{previewPath}}" mode="aspectFit" bindtap="chooseImage"></image>
+      <view class="btn-group" style="margin-top:16rpx;">
+        <view class="btn-group-item {{cropMode==='center'?'active':''}}" bindtap="setCropMode" data-mode="center">裁切中心</view>
+        <view class="btn-group-item {{cropMode==='scale'?'active':''}}" bindtap="setCropMode" data-mode="scale">缩放适应</view>
+        <view class="btn-group-item {{cropMode==='custom'?'active':''}}" bindtap="openCrop">自定义裁切</view>
+      </view>
+      <view class="checkbox-row" bindtap="toggleIgnoreBlack">
+        <checkbox checked="{{ignoreBlack}}" color="#007BFF"/>
+        <text>忽略图片中的黑色区域</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Color Adjustments -->
+  <view class="card" wx:if="{{hasImage}}">
+    <view class="section-title">颜色调整</view>
+    <view class="slider-row">
+      <text class="slider-label">暗部: {{colorAdjust.shadows}}</text>
+      <slider min="-100" max="100" value="{{colorAdjust.shadows}}" bindchange="onSliderChange" data-key="shadows" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="slider-row">
+      <text class="slider-label">亮部: {{colorAdjust.highlights}}</text>
+      <slider min="-100" max="100" value="{{colorAdjust.highlights}}" bindchange="onSliderChange" data-key="highlights" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="slider-row">
+      <text class="slider-label">色相: {{colorAdjust.hue}}</text>
+      <slider min="-180" max="180" value="{{colorAdjust.hue}}" bindchange="onSliderChange" data-key="hue" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="slider-row">
+      <text class="slider-label">饱和度: {{colorAdjust.saturation}}</text>
+      <slider min="-100" max="100" value="{{colorAdjust.saturation}}" bindchange="onSliderChange" data-key="saturation" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="slider-row">
+      <text class="slider-label">明度: {{colorAdjust.value}}</text>
+      <slider min="-100" max="100" value="{{colorAdjust.value}}" bindchange="onSliderChange" data-key="value" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="slider-row">
+      <text class="slider-label">对比度: {{colorAdjust.contrast}}</text>
+      <slider min="-100" max="100" value="{{colorAdjust.contrast}}" bindchange="onSliderChange" data-key="contrast" activeColor="#007BFF" backgroundColor="#e9ecef"/>
+    </view>
+    <view class="reset-btn" bindtap="resetColorAdjust">重置全部</view>
+  </view>
+
+  <!-- Step 2: Mosaic Size -->
+  <view class="card">
+    <view class="section-title">2. 选择马赛克尺寸</view>
+    <view class="size-row">
+      <text class="size-label">宽度</text>
+      <view class="size-control">
+        <view class="set-btn" bindtap="changeSize" data-dim="width" data-delta="-16">-</view>
+        <input class="size-input" type="number" value="{{mosaicWidth}}" bindblur="onSizeInput" data-dim="width"/>
+        <view class="set-btn" bindtap="changeSize" data-dim="width" data-delta="16">+</view>
+      </view>
+    </view>
+    <view class="size-row">
+      <text class="size-label">高度</text>
+      <view class="size-control">
+        <view class="set-btn" bindtap="changeSize" data-dim="height" data-delta="-16">-</view>
+        <input class="size-input" type="number" value="{{mosaicHeight}}" bindblur="onSizeInput" data-dim="height"/>
+        <view class="set-btn" bindtap="changeSize" data-dim="height" data-delta="16">+</view>
+      </view>
+    </view>
+    <view class="parts-info">所需颗粒: {{requiredParts}}</view>
+  </view>
+
+  <!-- Step 3: LEGO Sets -->
+  <view class="card">
+    <view class="section-title">3. 你拥有哪些乐高Art套装？</view>
+    <view class="sets-list">
+      <view class="set-row" wx:for="{{sets}}" wx:key="key">
+        <text class="set-name">{{item.name}} ({{item.id}})</text>
+        <view class="set-control">
+          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="-0.5">-</view>
+          <input class="set-input" type="digit" value="{{setCounts[item.key]}}" bindblur="onSetInput" data-key="{{item.key}}"/>
+          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="0.5">+</view>
+        </view>
+      </view>
+    </view>
+    <view class="parts-info">
+      可用颗粒: <text class="count {{partsWarning?'warning':''}}">{{availableParts}}</text>
+    </view>
+  </view>
+
+  <!-- Step 4: Calculate -->
+  <view class="card">
+    <view class="section-title">4. 开始计算</view>
+    <view class="progress-bar-container" wx:if="{{calculating}}">
+      <view class="progress-bar-fill" style="width:{{calcProgress}}%"></view>
+    </view>
+    <text wx:if="{{calcStatus}}" class="calc-status">{{calcStatus}}</text>
+    <view class="btn-primary {{canCalculate?'':'disabled'}}" bindtap="startCalculate">计算马赛克</view>
+  </view>
+
+  <!-- Mosaic Preview -->
+  <view class="card">
+    <view class="section-title" wx:if="{{hasMosaic}}">马赛克预览</view>
+    <view class="section-title" wx:else>处理画布</view>
+    <!-- Canvas always in DOM for pixel processing, positioned off-screen -->
+    <canvas type="2d" id="mosaicCanvas" style="position:fixed;left:-9999px;width:200px;height:200px;" disable-scroll></canvas>
+    <!-- Mosaic preview displayed as image -->
+    <image wx:if="{{mosaicPreviewPath}}" class="mosaic-preview-img" src="{{mosaicPreviewPath}}" mode="aspectFit" show-menu-by-longpress="true"></image>
+    <view wx:elif="{{hasMosaic}}" class="mosaic-placeholder">重新计算中...</view>
+    <view wx:else class="mosaic-placeholder">等待生成...</view>
+  </view>
+
+  <!-- Step 5: Download -->
+  <view class="card" wx:if="{{hasMosaic}}">
+    <view class="section-title">5. 下载说明书</view>
+    <view class="progress-bar-container" wx:if="{{generating}}">
+      <view class="progress-bar-fill" style="width:{{genProgress}}%;background:#28A745;"></view>
+    </view>
+    <view class="btn-success {{canDownload?'':'disabled'}}" bindtap="generateImage" style="margin-bottom:16rpx;">下载说明书长图 (PNG)</view>
+    <view class="btn-success {{canDownload?'':'disabled'}}" bindtap="saveToAlbum" style="background:#17a2b8;">保存到手机相册</view>
+  </view>
+
+  <view style="height:60rpx;"></view>
+</view>

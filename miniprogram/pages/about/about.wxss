@@ -1,0 +1,9 @@
+.page { padding: 20rpx 24rpx; }
+
+.help-text { display: flex; flex-direction: column; gap: 12rpx; }
+
+.help-step { font-size: 28rpx; font-weight: bold; color: #333; margin-top: 8rpx; }
+
+.help-desc { font-size: 26rpx; color: #666; line-height: 1.6; }
+
+.help-tip { font-size: 26rpx; color: #555; line-height: 1.8; }

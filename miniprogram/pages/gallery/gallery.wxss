@@ -1,0 +1,32 @@
+.page { padding: 20rpx 24rpx; }
+
+.gallery-list { display: flex; flex-direction: column; gap: 16rpx; }
+
+.gallery-item {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.gallery-thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+
+.gallery-info { flex: 1; margin-left: 20rpx; display: flex; flex-direction: column; gap: 8rpx; }
+.gallery-size { font-size: 28rpx; font-weight: bold; color: #333; }
+.gallery-date { font-size: 22rpx; color: #999; }
+
+.gallery-actions {
+  padding: 12rpx 24rpx;
+  background: #007BFF;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; }
+.empty-icon { font-size: 80rpx; margin-bottom: 20rpx; }
+.empty-text { font-size: 30rpx; color: #999; margin-bottom: 12rpx; }
+.empty-hint { font-size: 24rpx; color: #ccc; }
