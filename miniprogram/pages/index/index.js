@@ -26,7 +26,8 @@ Page({
     calcStatus: '',
     hasMosaic: false,
     canvasHeight: '',
-    mosaicPreviewPath: ''
+    mosaicPreviewPath: '',
+    previewFilter: 'none'
   },
 
   // Image source for processing (canvas or tempFilePath)
@@ -56,7 +57,8 @@ Page({
           hasMosaic: false,
           canDownload: false,
           canvasHeight: '',
-          mosaicPreviewPath: ''
+          mosaicPreviewPath: '',
+          previewFilter: 'none'
         });
         self._imageInfo = { type: 'path', path: tempPath };
         self.updateCalcButton();
@@ -97,15 +99,33 @@ Page({
     var val = Number(e.detail.value);
     var colorAdjust = this.data.colorAdjust;
     colorAdjust[key] = val;
-    this.setData({ colorAdjust: colorAdjust, hasMosaic: false, canDownload: false });
+    this.setData({ colorAdjust: colorAdjust, hasMosaic: false, canDownload: false, mosaicPreviewPath: '' });
+    this.updatePreviewFilter();
   },
 
   resetColorAdjust() {
     this.setData({
       colorAdjust: { shadows:0, highlights:0, hue:0, saturation:0, value:0, contrast:0 },
       hasMosaic: false,
-      canDownload: false
+      canDownload: false,
+      mosaicPreviewPath: ''
     });
+    this.updatePreviewFilter();
+  },
+
+  updatePreviewFilter() {
+    var adj = this.data.colorAdjust;
+    var hue = adj.hue;
+    var sat = 1 + adj.saturation / 100;
+    var bright = 1 + adj.value / 100;
+    var cont = 1 + adj.contrast / 100;
+    var shadow = adj.shadows;
+    var highlight = adj.highlights;
+    var filter = 'hue-rotate(' + hue + 'deg) saturate(' + sat + ') brightness(' + bright + ') contrast(' + cont + ')';
+    if (shadow > 0) filter += ' brightness(' + (1 - shadow / 300) + ')';
+    if (shadow < 0) filter += ' brightness(' + (1 - shadow / 200) + ')';
+    if (highlight > 0) filter += ' brightness(' + (1 + highlight / 300) + ')';
+    this.setData({ previewFilter: filter });
   },
 
   changeSize(e) {
@@ -137,7 +157,7 @@ Page({
     var key = e.currentTarget.dataset.key;
     var delta = Number(e.currentTarget.dataset.delta);
     var counts = this.data.setCounts;
-    counts[key] = Math.max(0, Number((counts[key] + delta).toFixed(1)));
+    counts[key] = Math.max(0, Math.round(counts[key] + delta));
     this.setData({ setCounts: counts });
     this.updateParts();
   },
@@ -280,7 +300,6 @@ Page({
         if (adj.shadows != 0 || adj.highlights != 0) {
           algo.adjustImageCurves(data, rawPixels, adj.shadows, adj.highlights, self.data.ignoreBlack);
         }
-        pixels.data.set(data);
 
         // Step 4: resize to actual mosaic dimensions for the algorithm
         // Use offscreen canvas at 1:1 pixel ratio (no dpr) for correct pixel reading
@@ -315,20 +334,56 @@ Page({
     var width = im.length, height = im[0].length;
     var renderW = 800, renderH = Math.round(800 * height / width);
 
-    // Render on offscreen canvas to avoid all display sizing issues
     var offscreen = wx.createOffscreenCanvas({ type: '2d', width: renderW, height: renderH });
     var ctx = offscreen.getContext('2d');
 
-    ctx.fillStyle = '#eee';
+    // Black background creates gap between bricks
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, renderW, renderH);
 
     var brickW = renderW / width, brickH = renderH / height;
+    var radius = brickW / 2.1;
+    var gap = (brickW - radius * 2) / 2;
+
     for (var x = 0; x < width; x++) {
       for (var y = 0; y < height; y++) {
         var m = im[x][y];
-        if (m[4] == 3) continue;
-        ctx.fillStyle = 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
-        ctx.fillRect(x * brickW, y * brickH, brickW + 0.5, brickH + 0.5);
+        var centerX = (x + 0.5) * brickW;
+        var centerY = (y + 0.5) * brickH;
+        var r = m[0], g = m[1], b = m[2];
+        var partType = m[4];
+
+        if (partType == 3) {
+          // Ignored (black) area
+          ctx.strokeStyle = 'rgba(255,0,0,0.3)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x * brickW, (y + 1) * brickH);
+          ctx.lineTo((x + 1) * brickW, y * brickH);
+          ctx.stroke();
+          ctx.lineWidth = 1;
+        } else {
+          // Draw brick shape
+          ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+          if (partType == 3024) {
+            // Square plate
+            ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+          } else {
+            // Round stud
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Highlight ring for plates and studs (simulates 3D bump)
+          if (partType == 3024 || partType == 6141) {
+            var cc = algo.getContrastColor(r, g, b);
+            ctx.strokeStyle = 'rgb(' + cc[0] + ',' + cc[1] + ',' + cc[2] + ')';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.6, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
       }
     }
 

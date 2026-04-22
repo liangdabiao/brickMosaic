@@ -6,7 +6,7 @@
     "pages/crop/crop"
   ],
   "window": {
-    "navigationBarTitleText": "AI乐高马赛克",
+    "navigationBarTitleText": "积木拼豆像素画",
     "navigationBarBackgroundColor": "#007BFF",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#F5F5F5",

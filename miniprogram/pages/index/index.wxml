@@ -7,7 +7,7 @@
       <view class="upload-text">点击选择图片</view>
     </view>
     <view wx:else>
-      <image class="preview-img" src="{{previewPath}}" mode="aspectFit" bindtap="chooseImage"></image>
+      <image class="preview-img" src="{{previewPath}}" mode="aspectFit" bindtap="chooseImage" style="filter:{{previewFilter}};"></image>
       <view class="btn-group" style="margin-top:16rpx;">
         <view class="btn-group-item {{cropMode==='center'?'active':''}}" bindtap="setCropMode" data-mode="center">裁切中心</view>
         <view class="btn-group-item {{cropMode==='scale'?'active':''}}" bindtap="setCropMode" data-mode="scale">缩放适应</view>
@@ -79,9 +79,9 @@
       <view class="set-row" wx:for="{{sets}}" wx:key="key">
         <text class="set-name">{{item.name}} ({{item.id}})</text>
         <view class="set-control">
-          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="-0.5">-</view>
+          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="-1">-</view>
           <input class="set-input" type="digit" value="{{setCounts[item.key]}}" bindblur="onSetInput" data-key="{{item.key}}"/>
-          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="0.5">+</view>
+          <view class="set-btn" bindtap="changeSetCount" data-key="{{item.key}}" data-delta="1">+</view>
         </view>
       </view>
     </view>

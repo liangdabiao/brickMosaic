@@ -1,4 +1,4 @@
-.page { padding: 20rpx 24rpx; }
+.page { padding: 20rpx 24rpx; overflow: hidden; }
 
 .upload-area {
   height: 300rpx;
@@ -65,7 +65,7 @@
   border: 1rpx solid #dee2e6;
 }
 
-.sets-list { max-height: 600rpx; }
+.sets-list { max-height: 520rpx; overflow-y: auto; }
 
 .calc-status { font-size: 24rpx; color: #666; display: block; text-align: center; margin: 8rpx 0; }
 

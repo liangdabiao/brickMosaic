@@ -19,6 +19,8 @@ page {
   padding: 24rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .btn-primary {
@@ -92,6 +94,7 @@ page {
   justify-content: space-between;
   padding: 12rpx 0;
   border-bottom: 1rpx solid #f0f0f0;
+  gap: 12rpx;
 }
 
 .set-row:last-child {
@@ -99,36 +102,41 @@ page {
 }
 
 .set-name {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #333;
   flex: 1;
+  min-width: 0;
+  word-break: break-all;
 }
 
 .set-control {
   display: flex;
   align-items: center;
   gap: 12rpx;
+  flex-shrink: 0;
 }
 
 .set-btn {
-  width: 48rpx;
-  height: 48rpx;
-  line-height: 48rpx;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
   text-align: center;
   background: #e9ecef;
   border-radius: 8rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #495057;
+  flex-shrink: 0;
 }
 
 .set-input {
-  width: 80rpx;
-  height: 48rpx;
-  line-height: 48rpx;
+  width: 72rpx;
+  height: 44rpx;
+  line-height: 44rpx;
   text-align: center;
   background: #f8f9fa;
   border-radius: 8rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
+  flex-shrink: 0;
 }
 
 .progress-bar-container {
