@@ -19,15 +19,21 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "生成"
+        "text": "生成",
+        "iconPath": "images/icons/generate.png",
+        "selectedIconPath": "images/icons/generate-active.png"
       },
       {
         "pagePath": "pages/gallery/gallery",
-        "text": "说明书"
+        "text": "说明书",
+        "iconPath": "images/icons/gallery.png",
+        "selectedIconPath": "images/icons/gallery-active.png"
       },
       {
         "pagePath": "pages/about/about",
-        "text": "帮助"
+        "text": "帮助",
+        "iconPath": "images/icons/about.png",
+        "selectedIconPath": "images/icons/about-active.png"
       }
     ]
   },

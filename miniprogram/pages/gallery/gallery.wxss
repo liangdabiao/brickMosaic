@@ -17,13 +17,27 @@
 .gallery-size { font-size: 28rpx; font-weight: bold; color: #333; }
 .gallery-date { font-size: 22rpx; color: #999; }
 
+.gallery-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
 .gallery-actions {
   padding: 12rpx 24rpx;
   background: #007BFF;
   color: #fff;
   border-radius: 8rpx;
   font-size: 24rpx;
-  flex-shrink: 0;
+}
+
+.gallery-delete {
+  padding: 12rpx 24rpx;
+  background: #dc3545;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 24rpx;
 }
 
 .empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; }

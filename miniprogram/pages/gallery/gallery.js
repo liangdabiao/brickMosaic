@@ -33,5 +33,23 @@ Page({
         }
       }
     });
+  },
+
+  deleteImage(e) {
+    var idx = e.currentTarget.dataset.index;
+    var self = this;
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这条记录吗？',
+      success(res) {
+        if (res.confirm) {
+          var history = self.data.history;
+          history.splice(idx, 1);
+          wx.setStorageSync('mosaic_history', history);
+          self.setData({ history: history });
+          wx.showToast({ title: '已删除', icon: 'success' });
+        }
+      }
+    });
   }
 });

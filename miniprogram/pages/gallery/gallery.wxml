@@ -6,8 +6,13 @@
         <text class="gallery-size">{{item.width}} x {{item.height}}</text>
         <text class="gallery-date">{{item.date}}</text>
       </view>
-      <view class="gallery-actions" catchtap="saveImage" data-index="{{index}}">
-        <text>保存</text>
+      <view class="gallery-btns">
+        <view class="gallery-actions" catchtap="saveImage" data-index="{{index}}">
+          <text>保存</text>
+        </view>
+        <view class="gallery-delete" catchtap="deleteImage" data-index="{{index}}">
+          <text>删除</text>
+        </view>
       </view>
     </view>
   </view>
