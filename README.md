@@ -1,4 +1,4 @@
-# Custom Brick Mosaic Generator - 自定义乐高马赛克生成器
+# Liang Brick Mosaic Generator - Liangdabiao定制的乐高马赛克像素画生成器
 
 [English](README.md) | 中文
 
