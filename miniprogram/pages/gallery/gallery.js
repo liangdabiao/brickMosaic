@@ -5,6 +5,7 @@ Page({
 
   onShow() {
     var history = wx.getStorageSync('mosaic_history') || [];
+    if (!Array.isArray(history)) history = [];
     this.setData({ history: history });
   },
 

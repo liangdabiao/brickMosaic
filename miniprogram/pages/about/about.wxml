@@ -18,11 +18,13 @@
   <view class="card">
     <view class="section-title">使用技巧</view>
     <view class="help-text">
+      <text class="help-tip">• 优先选择猫王或者蝙蝠侠，这2个是最好的实现效果</text>
+      <text class="help-tip">• 可以试试猫王或者蝙蝠侠，使用2套，这会解决大部分最难问题</text>
       <text class="help-tip">• 好的对比度是获得好结果的关键</text>
       <text class="help-tip">• 使用色相滑块让图片颜色更接近乐高现有颜色</text>
       <text class="help-tip">• 有时降低饱和度能获得更好效果</text>
       <text class="help-tip">• 用暗部/亮部滑块精细控制明暗分布</text>
-      <text class="help-tip">• 输入小数（如0.9）限制套装数量，可获得更有艺术感的效果</text>
+      <text class="help-tip">• 限制套装数量，可获得更有艺术感的效果</text>
       <text class="help-tip">• 如果图片有黑色背景，勾选"忽略黑色区域"</text>
       <text class="help-tip">• 使用自定义裁切精确选择你想要的区域</text>
     </view>
@@ -31,9 +33,9 @@
   <view class="card">
     <view class="section-title">关于</view>
     <view class="help-text">
-      <text class="help-desc">本应用基于开源项目 custombrickmosaic.github.io 开发，将图片转换为乐高积木马赛克拼贴图。</text>
+      <text class="help-desc">本应用参考了Christoph Fritzsch开源项目 custombrickmosaic.github.io 进行大量深度定制开发，目前已经达到适应大部分图片生成像素画，将图片转换为乐高积木马赛克拼贴图。</text>
       <text class="help-desc" style="margin-top:16rpx;">所有计算在手机端完成，图片不会上传到任何服务器，数据隐私得到保证。</text>
-      <text class="help-desc" style="margin-top:16rpx;">作者：Christoph Fritzsch</text>
+      <text class="help-desc" style="margin-top:16rpx;">作者：Liangdabiao.com</text>
       <text class="help-desc">小程序版：liangdabiao</text>
     </view>
   </view>

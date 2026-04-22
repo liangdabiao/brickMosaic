@@ -23,8 +23,6 @@ Page({
   _lastPinchDist: 0,
   _ctx: null,
   _canvas: null,
-  _needsRedraw: false,
-
   onLoad(options) {
     this._imagePath = decodeURIComponent(options.imagePath);
     this._aspectRatio = Number(options.aspectRatio) || 1;
@@ -63,6 +61,10 @@ Page({
           self._imgH = img.height;
           self.initCropBox();
           self.redraw();
+        };
+        img.onerror = function() {
+          wx.showToast({ title: '图片加载失败', icon: 'none' });
+          setTimeout(function() { wx.navigateBack(); }, 1500);
         };
       });
   },

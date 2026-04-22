@@ -74,7 +74,7 @@
 
   <!-- Step 3: LEGO Sets -->
   <view class="card">
-    <view class="section-title">3. 你拥有哪些乐高Art套装？</view>
+    <view class="section-title">3. 你拥有哪些乐高Art套装？（推荐猫王 蝙蝠侠）</view>
     <view class="sets-list">
       <view class="set-row" wx:for="{{sets}}" wx:key="key">
         <text class="set-name">{{item.name}} ({{item.id}})</text>

@@ -1,4 +1,3 @@
-const app = getApp();
 const { SETS } = require('../../data/lego-sets.js');
 const algo = require('../../utils/algorithm.js');
 const { renderTitlePage, renderSectionPage, PAGE_W, PAGE_H, SECTION_SIZE } = require('../../utils/instruction-gen.js');
@@ -25,12 +24,10 @@ Page({
     genProgress: 0,
     calcStatus: '',
     hasMosaic: false,
-    canvasHeight: '',
     mosaicPreviewPath: '',
     previewFilter: 'none'
   },
 
-  // Image source for processing (canvas or tempFilePath)
   _imageInfo: null,
   _finalMosaicIm: null,
   _fullPartList: [],
@@ -56,11 +53,12 @@ Page({
           colorAdjust: { shadows:0, highlights:0, hue:0, saturation:0, value:0, contrast:0 },
           hasMosaic: false,
           canDownload: false,
-          canvasHeight: '',
           mosaicPreviewPath: '',
           previewFilter: 'none'
         });
         self._imageInfo = { type: 'path', path: tempPath };
+        self._finalMosaicIm = null;
+        self._fullPartList = [];
         self.updateCalcButton();
       }
     });
@@ -172,8 +170,7 @@ Page({
 
   updateParts() {
     var result = algo.updatePartList(this.data.setCounts, this.data.ignoreBlack);
-    this.data.availableParts = result.totalCount;
-    this.data._fullPartList = result.fullPartList;
+    this._fullPartList = result.fullPartList;
     var warning = result.totalCount < this.data.requiredParts;
     this.setData({
       availableParts: result.totalCount,
@@ -192,7 +189,6 @@ Page({
     this.setData({ calculating: true, calcProgress: 0, calcStatus: '准备中...', hasMosaic: false, canDownload: false });
 
     var self = this;
-    console.log('[calc] start, imageInfo:', JSON.stringify(self._imageInfo));
     try {
       // Get processed image data
       var imageData = await this.getProcessedImageData();
@@ -204,7 +200,7 @@ Page({
       self.setData({ calcStatus: '生成马赛克...', calcProgress: 5 });
       await algo.sleep(50);
 
-      var mosaicIm = await algo.generateValidColoring(imageData, this.data._fullPartList, this.data.ignoreBlack, function(pct, msg) {
+      var mosaicIm = await algo.generateValidColoring(imageData, this._fullPartList, this.data.ignoreBlack, function(pct, msg) {
         self.setData({ calcProgress: pct, calcStatus: msg || '' });
       });
 
@@ -262,8 +258,6 @@ Page({
     var img = canvasNode.createImage();
     return new Promise(function(resolve) {
       img.onload = function() {
-        console.log('[calc] image loaded, size:', info.width, 'x', info.height);
-
         var mw = self.data.mosaicWidth, mh = self.data.mosaicHeight;
         var tmpW = 200, tmpH = Math.round(200 * mh / mw);
         tmpH = Math.max(1, tmpH);
@@ -282,11 +276,18 @@ Page({
             srcH = info.width * mh / mw;
             srcY = (info.height - srcH) / 2;
           }
+        } else if (self.data.cropMode === 'scale') {
+          var scaleX = tmpW / info.width;
+          var scaleY = tmpH / info.height;
+          var scale = Math.min(scaleX, scaleY);
+          var drawW = info.width * scale;
+          var drawH = info.height * scale;
+          ctx.drawImage(img, 0, 0, info.width, info.height, (tmpW - drawW) / 2, (tmpH - drawH) / 2, drawW, drawH);
+          // Skip the normal drawImage below
         }
         ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, tmpW, tmpH);
         var pixels = ctx.getImageData(0, 0, tmpW, tmpH);
         var rawPixels = new Uint8ClampedArray(pixels.data);
-        console.log('[calc] pixels read, size:', tmpW, 'x', tmpH);
 
         // Apply color adjustments
         var adj = self.data.colorAdjust;
@@ -315,8 +316,6 @@ Page({
         mosaicCtx.drawImage(tempCanvas, 0, 0, tmpW, tmpH, 0, 0, mosaicW, mosaicH);
 
         var mosaicPixels = mosaicCtx.getImageData(0, 0, mosaicW, mosaicH);
-        console.log('[calc] mosaic pixels ready:', mosaicW, 'x', mosaicH);
-
         resolve(mosaicPixels);
       };
 
@@ -394,7 +393,6 @@ Page({
         fileType: 'png',
         success: function(res) {
           self.setData({ mosaicPreviewPath: res.tempFilePath });
-          console.log('[mosaic] preview image exported:', res.tempFilePath);
           resolve();
         },
         fail: function(err) {
@@ -424,12 +422,12 @@ Page({
       var offscreen = wx.createOffscreenCanvas({ type: '2d', width: PAGE_W, height: totalHeight });
       var ctx = offscreen.getContext('2d');
 
-      renderTitlePage(ctx, 0, mosaicIm, this.data._fullPartList, 'mosaic');
+      renderTitlePage(ctx, 0, mosaicIm, this._fullPartList, 'mosaic');
       self.setData({ genProgress: Math.round(1 / totalPages * 100) });
       await algo.sleep(50);
 
       for (var i = 0; i < numSections; i++) {
-        renderSectionPage(ctx, PAGE_H * (i + 1), mosaicIm, this.data._fullPartList, i);
+        renderSectionPage(ctx, PAGE_H * (i + 1), mosaicIm, this._fullPartList, i);
         self.setData({ genProgress: Math.round((i + 2) / totalPages * 100) });
         await algo.sleep(30);
       }
@@ -489,15 +487,21 @@ Page({
   },
 
   saveHistory(filePath) {
-    var history = wx.getStorageSync('mosaic_history') || [];
-    history.unshift({
-      path: filePath,
-      width: this.data.mosaicWidth,
-      height: this.data.mosaicHeight,
-      date: new Date().toLocaleString(),
-      thumbnail: this.data.previewPath
-    });
-    if (history.length > 20) history = history.slice(0, 20);
-    wx.setStorageSync('mosaic_history', history);
+    try {
+      var history = wx.getStorageSync('mosaic_history') || [];
+      if (!Array.isArray(history)) history = [];
+      history.unshift({
+        path: filePath,
+        width: this.data.mosaicWidth,
+        height: this.data.mosaicHeight,
+        date: new Date().toLocaleString(),
+        thumbnail: this.data.previewPath
+      });
+      if (history.length > 20) history = history.slice(0, 20);
+      wx.setStorageSync('mosaic_history', history);
+    } catch (err) {
+      console.error('[history] save failed:', err);
+      try { wx.setStorageSync('mosaic_history', []); } catch(e) {}
+    }
   }
 });

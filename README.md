@@ -15,7 +15,10 @@
 - 支持图片裁切、色彩调整等预处理（色相、饱和度、明度、对比度、暗部、亮部）
 - 完全免费开源
 
-在线使用：https://custombrickmosaic.github.io/
+在线使用：https://github.com/liangdabiao
+
+![1.png](images/ScreenShot_2026-04-21_230845_154.png)
+
 
 ---
 
@@ -362,7 +365,7 @@ npx serve .
   │  │ ...     │                    │
   │  └─────────┘                    │
   │                                  │
-  │  custombrickmosaic.github.io     │
+  │  github.com/liangdabiao     │
   │  Page 1 / 10                     │
   └─────────────────────────────────┘
 
@@ -387,7 +390,7 @@ npx serve .
   │  │ ■ ● ■ ■ ● ■ ● ■ ● ■ ■  │    │
   │  └─────────────────────────┘    │
   │                                  │
-  │  custombrickmosaic.github.io     │
+  │  github.com/liangdabiao     │
   │  Page 4 / 10                     │
   └─────────────────────────────────┘
 
@@ -428,7 +431,7 @@ npx serve .
   核心渲染逻辑（标题页布局、分区页网格、颜色图例）与网页版完全一致，只是从 jsPDF API 翻译成了 Canvas 2D API。
 
 
-  
+
 
 ## 数据隐私
 
@@ -478,6 +481,6 @@ MIT License - 详见 [LICENSE](LICENSE) 文件。
 
 ## 源代码
 
-https://github.com/custombrickmosaic/custombrickmosaic.github.io
+https://github.com/liangdabiao
 
 欢迎提交Issue和Pull Request。

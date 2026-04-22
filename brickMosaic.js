@@ -1443,7 +1443,7 @@ function generatePDFTitlePage(pdf, timeString) {
 	
 	// Footer
 	pdf.setFontSize(11);
-	pdf.text(30, pdfHeight - 20, 'Downloaded from custombrickmosaic.github.io ');
+	pdf.text(30, pdfHeight - 20, 'Downloaded from github.com/liangdabiao ');
 	pdf.text(30, pdfHeight - 15, `${timeString}`);
 	pdf.text(pdfWidth - 40, pdfHeight - 15, `Page 1 / ${numSectionsX*numSectionsY+1}`);
 	
@@ -1539,7 +1539,7 @@ function generatePDFSectionPage( pdf, sectionNumber, timeString ) {
 	// Footer
 	pdf.setFontSize(11);
 	pdf.setTextColor(200,200,200);
-	pdf.text(30, pdfHeight - 20, 'Downloaded from custombrickmosaic.github.io ');
+	pdf.text(30, pdfHeight - 20, 'Downloaded from github.com/liangdabiao ');
 	pdf.text(30, pdfHeight - 15, `${timeString}`);
 	pdf.text(pdfWidth - 40, pdfHeight - 15, `Page ${sectionNumber+2} / ${numSectionsX*numSectionsY+1}`);
 }	
@@ -1740,7 +1740,7 @@ function generateImageTitlePage(ctx, offsetY, timeString) {
     ctx.fillStyle = "black";
     ctx.font = `${imgMm(5)}px sans-serif`;
     ctx.textBaseline = "middle";
-    ctx.fillText("Downloaded from custombrickmosaic.github.io", imgMm(30), H - imgMm(20) + offsetY);
+    ctx.fillText("Downloaded from github.com/liangdabiao", imgMm(30), H - imgMm(20) + offsetY);
     ctx.fillText(timeString, imgMm(30), H - imgMm(15) + offsetY);
     ctx.fillText(`Page 1 / ${numSectionsX * numSectionsY + 1}`, W - imgMm(50), H - imgMm(15) + offsetY);
 }
@@ -1839,7 +1839,7 @@ function generateImageSectionPage(ctx, offsetY, sectionNumber, timeString) {
     ctx.fillStyle = "rgb(200,200,200)";
     ctx.font = `${imgMm(5)}px sans-serif`;
     ctx.textBaseline = "middle";
-    ctx.fillText("Downloaded from custombrickmosaic.github.io", imgMm(30), H - imgMm(20) + offsetY);
+    ctx.fillText("Downloaded from github.com/liangdabiao", imgMm(30), H - imgMm(20) + offsetY);
     ctx.fillText(timeString, imgMm(30), H - imgMm(15) + offsetY);
     ctx.fillText(`Page ${sectionNumber + 2} / ${numSectionsX * numSectionsY + 1}`, W - imgMm(50), H - imgMm(15) + offsetY);
 }

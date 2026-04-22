@@ -19,7 +19,7 @@
     "autoAudits": false,
     "newFeature": false,
     "uglifyFileName": false,
-    "uploadWithSourceMap": true,
+    "uploadWithSourceMap": false,
     "enhance": true,
     "showShadowRootInWxmlPanel": true,
     "packNpmManually": false,

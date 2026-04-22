@@ -19,10 +19,10 @@ function rgbHex(r, g, b) {
 function renderTitlePage(ctx, offsetY, finalMosaicIm, fullPartList, imageFilename) {
   var W = PAGE_W, H = PAGE_H;
 
-  // Background
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, offsetY, W, H);
 
+  if (!finalMosaicIm || !finalMosaicIm[0]) return;
   var realWidth = finalMosaicIm.length;
   var realHeight = finalMosaicIm[0].length;
   var width = Math.ceil(realWidth / SECTION_SIZE) * SECTION_SIZE;
@@ -145,7 +145,7 @@ function renderTitlePage(ctx, offsetY, finalMosaicIm, fullPartList, imageFilenam
   ctx.fillStyle = '#000';
   ctx.font = mm(4) + 'px sans-serif';
   ctx.textBaseline = 'middle';
-  ctx.fillText('custombrickmosaic.github.io', mm(30), H - mm(15) + offsetY);
+  ctx.fillText('github.com/liangdabiao', mm(30), H - mm(15) + offsetY);
   ctx.fillText('Page 1 / ' + (numSections + 1), W - mm(60), H - mm(15) + offsetY);
 }
 
@@ -155,6 +155,7 @@ function renderSectionPage(ctx, offsetY, finalMosaicIm, fullPartList, sectionNum
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, offsetY, W, H);
 
+  if (!finalMosaicIm || !finalMosaicIm[0]) return;
   var width = finalMosaicIm.length;
   var height = finalMosaicIm[0].length;
   var numSectionsX = Math.ceil(width / SECTION_SIZE);
@@ -240,7 +241,7 @@ function renderSectionPage(ctx, offsetY, finalMosaicIm, fullPartList, sectionNum
   ctx.fillStyle = '#999';
   ctx.font = mm(4) + 'px sans-serif';
   ctx.textBaseline = 'middle';
-  ctx.fillText('custombrickmosaic.github.io', mm(30), H - mm(12) + offsetY);
+  ctx.fillText('github.com/liangdabiao', mm(30), H - mm(12) + offsetY);
   ctx.fillText('Page ' + (sectionNumber + 2) + ' / ' + (numSectionsX * numSectionsY + 1), W - mm(60), H - mm(12) + offsetY);
 }
 
