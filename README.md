@@ -10,10 +10,13 @@
 
 **核心特点：**
 - 从任意图片生成乐高积木马赛克
+- 整个项目所有都是免费，0成本部署一个AI乐高马赛克像素画生成器
+- 小程序也是开源免费，功能是一致，用户体验很棒
 - **隐私保护**：所有计算都在你的浏览器中完成，图片不会上传到任何服务器
 - 自动生成带分区指导的**PDF拼搭说明书**和**长图说明书**
 - 支持组合多个乐高Art系列套装来获得更大尺寸的马赛克
 - 支持**自定义裁剪**：可自由框选图片区域，自动保持马赛克宽高比
+- 支持**AI 风格优化**：对接火山引擎即梦 AI，一键将图片转为多边形艺术风格，提升马赛克效果
 - 支持图片裁切、色彩调整等预处理（色相、饱和度、明度、对比度、暗部、亮部）
 - 完全免费开源
 
@@ -21,6 +24,14 @@
 
 ![1.png](images/ScreenShot_2026-04-21_230845_154.png)
 
+**AI一键优化：**
+
+![2.png](images/ScreenShot_2026-04-22_144348_592.png)
+![2.png](images/ScreenShot_2026-04-22_144447_256.png)
+
+**小程序：**
+
+![4.png](images/ScreenShot_2026-04-22_092133_531.png)
 
 ---
 
@@ -31,7 +42,9 @@
 - [界面功能详解](#界面功能详解)
 - [支持的乐高Art套装](#支持的乐高art套装)
 - [使用技巧](#使用技巧)
+- [AI 风格优化](#ai-风格优化)
 - [本地运行](#本地运行)
+- [部署到 Cloudflare Pages](#部署到-cloudflare-pages)
 - [技术架构](#技术架构)
 - [数据隐私](#数据隐私)
 - [更新日志](#更新日志)
@@ -137,6 +150,13 @@ distance越小，颜色越接近。
 - **勾选后**：RGB值为(0,0,0)的纯黑色区域不会被分配积木，在说明书中用"?"标记
 - **默认**：勾选
 
+**AI 风格优化按钮**
+- 点击"AI 风格优化"按钮，将当前图片发送到后端 AI 服务进行风格化处理
+- 使用火山引擎即梦 AI，将图片转换为多边形艺术风格（锐利线条、现代图形感）
+- 处理时间约 10-30 秒，完成后自动替换图片并刷新预览
+- 可多次点击"重新AI优化"进行迭代优化
+- **注意**：此功能需要部署到 Cloudflare Pages 才能使用（依赖后端 API）
+
 **颜色调整滑块**
 
 | 滑块 | 范围 | 功能 |
@@ -229,6 +249,53 @@ distance越小，颜色越接近。
 
 ---
 
+## AI 风格优化
+
+AI 风格优化功能通过对接火山引擎即梦 AI，将用户上传的图片一键转换为更适合乐高马赛克的艺术风格。
+
+### 风格效果
+
+- 纯黑色背景
+- 戏剧性低光
+- 多边形艺术风格，锐利的线条和刻面，现代图形感
+- 动态构图，融合写实与抽象
+
+### 工作原理
+
+```
+用户点击"AI 风格优化"
+    ↓
+前端将 canvas 图片转为 JPEG base64
+    ↓
+POST 到 /api/ai-optimize（Cloudflare Pages Function）
+    ↓
+后端调用火山引擎即梦 AI API（签名认证 + 异步任务）
+    ↓
+轮询等待 AI 处理完成（最长约3分钟）
+    ↓
+返回优化后的图片 URL/base64
+    ↓
+前端替换图片、刷新预览，如已生成马赛克则自动重新计算
+```
+
+### 后端 API
+
+- 路径：`/api/ai-optimize`
+- 方法：`POST`
+- 请求体：`{ "imageBase64": "data:image/jpeg;base64,...", "prompt": "风格描述" }`
+- 返回：`{ "success": true, "imageUrl": "..." }`
+
+### 环境变量
+
+后端 API 需要配置以下环境变量（在 Cloudflare Pages Settings → Environment variables 中设置）：
+
+| 变量名 | 说明 |
+|--------|------|
+| `VOLC_ACCESS_KEY_ID` | 火山引擎 Access Key ID |
+| `VOLC_SECRET_ACCESS_KEY` | 火山引擎 Secret Access Key |
+
+---
+
 ## 本地运行
 
 本项目是纯静态HTML+JavaScript应用，**无需构建过程**，无需任何依赖。
@@ -256,6 +323,72 @@ npx serve .
 
 ---
 
+## 部署到 Cloudflare Pages
+
+本项目包含 Cloudflare Pages Function（`functions/api/`），因此**不能使用 Cloudflare 后台的直接拖拽上传**（拖拽上传不支持 Functions），必须使用 wrangler CLI 部署。
+
+### 前提条件
+
+1. 安装 [Node.js](https://nodejs.org/)（18+）
+2. 在 [Cloudflare Dashboard](https://dash.cloudflare.com/) 创建 Pages 项目
+3. 准备好火山引擎的 Access Key（用于 AI 风格优化功能）
+
+### 部署步骤
+
+**1. 安装 wrangler 并登录**
+
+```bash
+npm install -g wrangler
+wrangler login
+```
+
+登录后会自动打开浏览器进行授权。
+
+**2. 配置环境变量**
+
+在 Cloudflare 后台 **Pages → 你的项目 → Settings → Environment variables** 中添加：
+
+| 变量名 | 值 |
+|--------|-----|
+| `VOLC_ACCESS_KEY_ID` | 你的火山引擎 AK |
+| `VOLC_SECRET_ACCESS_KEY` | 你的火山引擎 SK |
+
+**3. 部署**
+
+```bash
+# 部署到已有项目
+npx wrangler pages deploy . --project-name=你的项目名
+
+# 或部署到新项目
+npx wrangler pages deploy .
+```
+
+部署完成后会输出访问 URL。
+
+### 项目文件结构（含 Cloudflare）
+
+```
+/
+├── index.html              # 主页面
+├── brickMosaic.js          # 前端逻辑
+├── cf_about.png            # 头像
+├── favicon.ico             # 图标
+├── LICENSE                 # MIT 许可证
+├── package.json            # wrangler 部署脚本
+├── wrangler.toml           # Cloudflare 配置
+└── functions/
+    └── api/
+        └── ai-optimize.js  # AI 优化 API（Pages Function）
+```
+
+### 注意事项
+
+- **不要使用 Cloudflare 后台的拖拽上传**，它不会处理 `functions/` 目录，会导致 API 返回 405
+- 可以通过 Git 集成部署（Cloudflare Pages 关联 GitHub 仓库），推送代码后自动部署，这也支持 Functions
+- 本地开发测试可用 `npx wrangler pages dev .`，会自动启动本地服务器并支持 Functions 调用
+
+---
+
 ## 项目文件结构
 
 ```
@@ -278,7 +411,7 @@ npx serve .
 - **图片裁剪**：Cropper.js 1.6.2（CDN）
 - **长图生成**：Canvas API + toDataURL()
 - **部署**：GitHub Pages 静态托管
-- **计算**：全部在浏览器客户端完成，无后端服务器
+- **计算**：马赛克生成在浏览器客户端完成；AI 优化通过 Cloudflare Pages Function 调用火山引擎 API
 
 ### 主要函数说明
 
@@ -445,6 +578,15 @@ npx serve .
 ---
 
 ## 更新日志
+
+### AI 风格优化
+- 新增"AI 风格优化"按钮，对接火山引擎即梦 AI API
+- 一键将图片转换为多边形艺术风格（纯黑背景、戏剧性低光、锐利刻面线条）
+- 通过 Cloudflare Pages Function 实现后端 API（`/api/ai-optimize`）
+- 支持火山引擎 HMAC-SHA256 签名认证
+- 异步任务提交 + 轮询机制，最长等待约3分钟
+- 优化完成后自动刷新预览，如已生成马赛克则自动重新计算
+- 图片安全检测失败时给出友好提示
 
 ### 自定义裁剪功能
 - 集成 Cropper.js 1.6.2，新增"自定义裁切"按钮

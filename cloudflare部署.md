@@ -144,3 +144,4 @@ console.log(result.imageUrl);
   或者命令行指定：
   npx wrangler pages deploy . --env VOLC_ACCESS_KEY_ID=你的key --env VOLC_SECRET_ACCESS_KEY=你的secret
   
+ 
