@@ -1,0 +1,8 @@
+{
+  "name": "my-mosaic-api",
+  "private": true,
+  "scripts": {
+    "dev": "npx wrangler pages dev .",
+    "deploy": "npx wrangler pages deploy ."
+  }
+}

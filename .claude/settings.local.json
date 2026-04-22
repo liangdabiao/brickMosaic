@@ -9,7 +9,17 @@
       "Bash(xxd)",
       "Bash(sed -i '444s|width:100%;max-height:70vh;overflow:hidden;|width:100%;min-height:400px;max-height:70vh;|' D:/custombrickmosaic.github.io-master/index.html)",
       "Bash(sed -i '445s|style=\"display:block;max-width:100%;max-height:70vh;margin:0 auto;\"|style=\"display:block;width:100%;\"|' D:/custombrickmosaic.github.io-master/index.html)",
-      "Bash(python gen_icons.py)"
+      "Bash(python gen_icons.py)",
+      "Bash(curl *)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import base64; f=open\\('images/ScreenShot_2026-04-21_223002_797.png','rb'\\); data=base64.b64encode\\(f.read\\(\\)\\).decode\\(\\); f.close\\(\\); print\\(len\\(data\\)\\)\")",
+      "Bash(python test_api.py)",
+      "Bash(xxd D:/custombrickmosaic.github.io-master/index.html)",
+      "Bash(sed -n 'p')",
+      "Bash(python3 -c \" with open\\('D:/custombrickmosaic.github.io-master/index.html', 'r', encoding='utf-8'\\) as f: lines = f.readlines\\(\\) for i in range\\(96, 100\\): print\\(f'{i+1}: {repr\\(lines[i]\\)}'\\)\")",
+      "Bash(python -c \" with open\\('D:/custombrickmosaic.github.io-master/index.html', 'r', encoding='utf-8'\\) as f: lines = f.readlines\\(\\) for i in range\\(96, 100\\): print\\(f'{i+1}: {repr\\(lines[i]\\)}'\\)\")",
+      "Bash(python *)",
+      "Bash(python3 *)"
     ]
   },
   "enabledPlugins": {

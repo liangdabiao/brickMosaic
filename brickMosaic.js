@@ -142,6 +142,88 @@ document.getElementById("imageFile").addEventListener("change", function() {
 
 
 
+// AI 风格优化
+document.getElementById("buttonAiOptimize").addEventListener("click", async () => {
+	if (!validImagePresent) {
+		alert("请先选择一张图片");
+		return;
+	}
+
+	const btn = document.getElementById("buttonAiOptimize");
+	const icon = document.getElementById("aiOptimizeIcon");
+	const text = document.getElementById("aiOptimizeText");
+	const status = document.getElementById("aiOptimizeStatus");
+
+	btn.disabled = true;
+	icon.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+	text.textContent = "AI 优化中... (约10-30秒)";
+	status.textContent = "";
+
+	try {
+		const thumbnailCanvas = document.getElementById('thumbnailCanvas');
+		const imageBase64 = thumbnailCanvas.toDataURL('image/jpeg', 0.85);
+
+		const prompt = '风格参考：{ "background": "纯黑色", "lighting": "戏剧性的低光", "style": "多边形艺术风格，锐利的线条和刻面，现代图形感，融合写实与抽象", "composition": "动态构图，焦点在 表情和姿势" }';
+
+		const response = await fetch('/api/ai-optimize', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ imageBase64, prompt })
+		});
+
+		const data = await response.json();
+
+		if (!response.ok || data.error) {
+			const errorMsg = data.message || data.error || '未知错误';
+			if (errorMsg.includes('IMAGE_RISK')) {
+				throw new Error('图片未通过安全检测，请尝试使用其他图片。');
+			}
+			throw new Error(errorMsg);
+		}
+
+		if (!data.imageUrl) {
+			throw new Error('AI 优化未返回图片数据');
+		}
+
+		const aiImg = new Image();
+		aiImg.crossOrigin = 'anonymous';
+		aiImg.onload = () => {
+			previewImage.src = data.imageUrl;
+			previewImage.onload = () => {
+				drawPreviewImage(true);
+				if (!document.getElementById("buttonCalculate").disabled) {
+					generateValidColoringAndDraw();
+				}
+				text.textContent = "重新AI优化";
+				status.textContent = "优化完成";
+				status.classList.remove('text-danger');
+				status.classList.add('text-success');
+				btn.disabled = false;
+				icon.innerHTML = "🤖";
+			};
+		};
+		aiImg.onerror = () => {
+			status.textContent = "AI 返回的图片加载失败";
+			status.classList.remove('text-success');
+			status.classList.add('text-danger');
+			text.textContent = "AI 风格优化";
+			icon.innerHTML = "🤖";
+			btn.disabled = false;
+		};
+		aiImg.src = data.imageUrl;
+
+	} catch (error) {
+		console.error('AI optimization error:', error);
+		status.textContent = error.message;
+		status.classList.remove('text-success');
+		status.classList.add('text-danger');
+		text.textContent = "AI 风格优化";
+		icon.innerHTML = "🤖";
+		btn.disabled = false;
+	}
+});
+
+
 document.getElementById("buttonCalculate").addEventListener("click", async () => {
 	await drawPreviewImage(false); // remove red stripes if "ignore black regions"
 	var thumbnailCanvas = document.getElementById('thumbnailCanvas');

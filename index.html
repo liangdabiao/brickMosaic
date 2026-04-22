@@ -95,6 +95,13 @@
 							<label class="form-check-label" for="flexSwitchCheckDefault">忽略图片中的黑色区域</label>
 						</div>
 					</div>
+					<div class="col-12 my-1">
+						<button type="button" class="btn btn-outline-info btn-sm w-100" id="buttonAiOptimize">
+							<span id="aiOptimizeIcon">🤖</span>
+							<span id="aiOptimizeText">AI 风格优化</span>
+						</button>
+						<p class="text-muted mb-0 mt-1" style="font-size:0.75rem;" id="aiOptimizeStatus"></p>
+					</div>
                 </div>
                 <div class="row py-4">
 					<label class="form-label"><strong>2. 选择马赛克尺寸</strong></label>
@@ -380,6 +387,9 @@
 		  <div class="modal-body">
 			<h5>输入图片</h5>
 			<p>获得好结果最重要的因素是输入图片本身。良好的对比度和颜色分布与你选择的乐高套装相近，有助于产生好结果。值得尝试几张不同图片和不同裁切/缩放。均匀纯色背景效果更好，因此你可以先用外部图像处理软件将背景替换为纯色。</p>
+			<p class="help-tip">• 优先选择猫王或者蝙蝠侠，这2个是最好的实现效果</p>
+      		<p class="help-tip">• 可以试试猫王或者蝙蝠侠，使用2套，这会解决大部分最难问题</p>
+
 			<h5>颜色调整</h5>
 			<p>多试几个滑块组合，看看对最终马赛克的影响。使用色相滑块调整图片整体颜色，使其更接近乐高套装中的可用颜色。亮度和对比度可用于将图片移动到与可用颜色相近的亮度范围。有时降低饱和度能获得更好效果，饱和度较低的图片会更依赖亮度差异而不是实际颜色差异。如果背景在输入图片中占很大空间，可以考虑先用外部程序将背景替换为黑色(RGB 0,0,0)，然后使用"忽略黑色区域"排除这些背景区域。算法只会填充主体，可以更好地分配可用颜色。</p>
 			<h5>乐高Art套装选择</h5>
@@ -394,6 +404,7 @@
 			<p class="my-0">我知道还有另外两个很棒的网站，也允许你基于乐高Art生成马赛克。你也可以试试它们。</p>
 			<p class="my-0"><a href="https://lego-art-remix.debkbanerji.com/">Lego Art Remix</a></p>
 			<p><a href="https://jgassen.shinyapps.io/legoartmosaic/">LEGO Art Mosaic Generator</a></p>
+			<p><a href="https://custombrickmosaic.github.io/">LEGO  custom brick mosaic</a></p>
 		  </div>
 		  <div class="modal-footer py-1">
 			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
@@ -414,7 +425,8 @@
 				<h5>关于作者</h5>
 				<div class="col-12">
 					<img src="cf_about.png" class="rounded-circle" style='float:left;width:150px;height:150px; margin-right:10px;' alt="mosaic styled portrait">
-					<p>"我整个童年都是乐高粉丝，最近通过孩子重新接触到乐高。我的工作是研究图像分析和计算机视觉问题。把我对乐高的热爱和对图像处理与编码的热情结合在一起，把这个网站带给大家，真的很兴奋。我希望你们很多人喜欢使用这个网站来构建自己美丽的乐高艺术马赛克。"</p>
+					<p>https://liang.348349.xyz/  -- by liangdabiao ,探索40款精心打造的开源AI工具，涵盖AI动画生成、智能数据分析、自动化客服、简历智能匹配、图像处理、文本分析、语音识别、代码生成、推荐系统和自然语言处理等多个前沿领域，基于最新的深度学习与机器学习技术框架，让AI技术真正赋能您的创意表达与工作效率提升，助力个人开发者与企业实现智能化转型</p>
+					<p>"我是乐高粉丝，最近通过孩子重新接触到乐高。我的工作是研究图像分析和计算机视觉问题。把我对乐高的热爱和对图像处理与编码的热情结合在一起，把这个网站带给大家，真的很兴奋。我希望你们很多人喜欢使用这个网站来构建自己美丽的乐高艺术马赛克。"</p>
 					<p class="text-end">Christoph Fritzsch</p>
 				</div>
 			</div>
@@ -458,11 +470,15 @@
 
 
 
+    <footer class="text-center text-muted py-3 mt-3" style="font-size:0.85rem;">
+      &copy; <a href="https://liangdabiao.com" target="_blank" style="text-decoration:none;color:#999;">liangdabiao.com</a>
+    </footer>
+
     <!-- Bootstrap Bundle with Popper -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     <!-- Cropper.js v1 - 图片裁剪库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <script src=".\brickMosaic.js"> </script>
-    
+
 </body>
 </html>
