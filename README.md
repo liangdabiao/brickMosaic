@@ -22,6 +22,8 @@
 
 在线使用：https://lego.348349.xyz/
 
+特别感谢佬友支持： [linux.do](https://linux.do/t/topic/1660924/)
+
 ![1.png](images/ScreenShot_2026-04-21_230845_154.png)
 
 **AI一键优化：**
