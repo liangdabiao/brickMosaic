@@ -17,7 +17,7 @@
 - 支持图片裁切、色彩调整等预处理（色相、饱和度、明度、对比度、暗部、亮部）
 - 完全免费开源
 
-在线使用：https://github.com/liangdabiao
+在线使用：https://lego.348349.xyz/
 
 ![1.png](images/ScreenShot_2026-04-21_230845_154.png)
 
